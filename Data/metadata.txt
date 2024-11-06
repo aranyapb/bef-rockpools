@@ -1,0 +1,37 @@
+
+# Metadata: Global variation in biodiversity–ecosystem functioning (BEF) relationships in aquatic metacommunities on terrestrial islands
+
+# Authors: Joren M. Snoeks, Aranya Pathak-Broome, James G. Hagan, Bram Vanschoenwinkel
+
+# Description: This file contains descriptions of all the relevant variables in the datasets used in the analyses.
+
+
+# Data files 1-3: 
+
+1. alpha-all-raw.csv
+2. alpha-active-raw.csv
+3. alpha-passive-raw.csv
+
+# Variables
+
+Inselberg - three letter code specifying the inselberg from which the data were gathered
+
+Pool - identity of the specific rock pool sampled
+
+Alpha - alpha diversity as estimated using the Chao1 estimator
+
+Biomass - biomass etc.
+
+# Data files 4-6: 
+
+1. gamma-all-raw.csv
+2. gamma-active-raw.csv
+3. gamma-passive-raw.csv
+
+# Data file 7: pool-community-data.csv
+
+# Data file 8: pool-sediment-data.csv
+
+# Date file 9: pool-community-biomass-data.csv
+
+# Data file 10: bioclim-data.csv
