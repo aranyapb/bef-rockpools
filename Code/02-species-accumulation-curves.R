@@ -15,7 +15,7 @@ library(ggpubr)
 # load the relevant data
 sac_dat <- readr::read_csv2("Data/pool-community-data.csv")
 
-# remove the columbia inselberg
+# remove the colombia inselberg
 unique(sac_dat$Inselberg)
 
 sac_dat <- 

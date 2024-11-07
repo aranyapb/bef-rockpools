@@ -49,7 +49,7 @@ cols <- cols[which(inselbergs %in% unique(sed_dat$Inselberg))]
 sed_cor <- cor.test(sed_dat$Lndepth, sed_dat$LnSedPerVRatio, method="pearson") # r = -0.73; P<0.001
 sed_est <- round(sed_cor$estimate, 2)
   
-# plot fig. s10
+# plot fig. s5.1
 p1 <- 
   ggplot(data = sed_dat, mapping = aes(x = Lndepth, y = LnSedPerVRatio, colour = Inselberg)) +
   geom_point(shape = 1, stroke = 0.5, alpha = 0.8, size = 1.75) +
@@ -68,7 +68,7 @@ p1 <-
 plot(p1)
 
 # export the figure
-ggsave("Figures/fig_s10.pdf", p1, 
+ggsave("Figures/fig_s5.1.pdf", p1, 
        units = "cm", width = 12, height = 9.5)
 
 ### END

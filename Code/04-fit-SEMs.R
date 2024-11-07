@@ -134,7 +134,7 @@ alph_dat$logbiomass_pred <-
        a + (b1*loggamma) + (b2*PC1) + (b3*PC2) + (b4*logalpha) + (b5*logdepth))
 
 # appendix: gamma -> BM
-# fig. s4
+# fig. s1.2
 
 # make predictions for each inselberg
 min_pred <- ( min(alph_dat$loggamma) - 0.1)
@@ -166,7 +166,7 @@ p1 <-
                 taxa = taxa, labels = c("a", "b", "c") )
 
 # save the figure as a .rds file
-saveRDS(object = p1[[1]], file = paste0("Figures/fig_s4", p1[[2]], ".rds"))
+saveRDS(object = p1[[1]], file = paste0("Figures/fig_s1.2", p1[[2]], ".rds"))
 
 
 # model with total effect of gamma on biomass
@@ -245,7 +245,7 @@ p1 <-
 saveRDS(object = p1[[1]], file = paste0("Figures/fig_5", p1[[2]], ".rds"))
 
 # appendix: PC1 -> BM
-# figure s6
+# figure s1.4
 
 # make predictions for each inselberg
 min_pred <- ( min(alph_dat$PC1) - 0.1)
@@ -278,11 +278,11 @@ p1 <-
                 taxa = taxa, labels = c("a", "b", "c") )
 
 # save the figure as a .rds file
-saveRDS(object = p1[[1]], file = paste0("Figures/fig_s6", p1[[2]], ".rds"))
+saveRDS(object = p1[[1]], file = paste0("Figures/fig_s1.4", p1[[2]], ".rds"))
 
 
 # appendix: PC2 - BM
-# figure s6
+# figure s1.4
 
 # make predictions for each inselberg
 min_pred <- ( min(alph_dat$PC2) - 0.1)
@@ -315,11 +315,11 @@ p1 <-
                 taxa = taxa, labels = c("d", "e", "f") )
 
 # save the figure as a .rds file
-saveRDS(object = p1[[1]], file = paste0("Figures/fig_s6", p1[[2]], ".rds"))
+saveRDS(object = p1[[1]], file = paste0("Figures/fig_s1.4", p1[[2]], ".rds"))
 
 
 # appendix: depth - BM
-# figure s5
+# figure s1.3
 
 # make predictions for each inselberg
 min_pred <- ( min(alph_dat$Depth) - 0.1)
@@ -351,7 +351,7 @@ p1 <-
                 taxa = taxa, labels = c("a", "b", "c") )
 
 # save the figure as a .rds file
-saveRDS(object = p1[[1]], file = paste0("Figures/fig_s5", p1[[2]], ".rds"))
+saveRDS(object = p1[[1]], file = paste0("Figures/fig_s1.3", p1[[2]], ".rds"))
 
 
 # conditional effect plots: lm2
@@ -372,7 +372,7 @@ alph_dat$logalpha_pred <-
 
 
 # appendix: gamma -> alpha
-# fig. s8
+# fig. s1.6
 
 # make predictions for each inselberg
 min_pred <- ( min(alph_dat$loggamma) - 0.1)
@@ -401,11 +401,11 @@ p1 <-
                 taxa = taxa, labels = c("a", "b", "c") )
 
 # save the figure as a .rds file
-saveRDS(object = p1[[1]], file = paste0("Figures/fig_s8", p1[[2]], ".rds"))
+saveRDS(object = p1[[1]], file = paste0("Figures/fig_s1.6", p1[[2]], ".rds"))
 
 
 # appendix: depth - alpha
-# fig. s5
+# fig. s1.3
 
 # make predictions for each inselberg
 min_pred <- ( min(alph_dat$logdepth) - 0.1)
@@ -434,7 +434,7 @@ p1 <-
                 taxa = taxa, labels = c("d", "e", "f") )
 
 # save the figure as a .rds file
-saveRDS(object = p1[[1]], file = paste0("Figures/fig_s5", p1[[2]], ".rds"))
+saveRDS(object = p1[[1]], file = paste0("Figures/fig_s1.3", p1[[2]], ".rds"))
 
 
 # conditional effect plots: lm1
@@ -457,7 +457,7 @@ gam_dat$loggamma_pred <-
        a + (b1*PC1) + (b2*PC2))
 
 # appendix: PC1 - gamma
-# fig. s7
+# fig. s1.5
 
 # make predictions for each inselberg
 min_pred <- ( min(gam_dat$PC1) - 0.1)
@@ -486,10 +486,10 @@ p1 <-
                 taxa = taxa, labels = c("a", "b", "c") )
 
 # save the figure as a .rds file
-saveRDS(object = p1[[1]], file = paste0("Figures/fig_s7", p1[[2]], ".rds"))
+saveRDS(object = p1[[1]], file = paste0("Figures/fig_s1.5", p1[[2]], ".rds"))
 
 # appendix: PC2 - gamma
-# fig. s7
+# fig. s1.5
 
 # make predictions for each inselberg
 min_pred <- ( min(gam_dat$PC2) - 0.1)
@@ -518,7 +518,7 @@ p1 <-
                 taxa = taxa, labels = c("d", "e", "f") )
 
 # save the figure as a .rds file
-saveRDS(object = p1[[1]], file = paste0("Figures/fig_s7", p1[[2]], ".rds"))
+saveRDS(object = p1[[1]], file = paste0("Figures/fig_s1.5", p1[[2]], ".rds"))
 
 ### END
 
