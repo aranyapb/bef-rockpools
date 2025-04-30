@@ -1,66 +1,99 @@
+#' Predict from an lmer model with intervals using merTools::predictInterval
 #'
-#' @title ci_lmm
-#' 
-#' @description function to calculate the 95% confidence interval for a 
-#' linear mixed model with a random intercept. The function uses the formulas
-#' for standard linear model confidence intervals to calculate the confidence
-#' interval using the average intercept from the lmm.
-#' 
-#' references for the confidence interval formula:
-#' https://stats.stackexchange.com/questions/585660/what-is-the-formula-for-prediction-interval-in-multivariate-case#:~:text=It%20is%20given%20by%20%CB%86,is%20the%20number%20of%20regressors
-#' https://real-statistics.com/multiple-regression/confidence-and-prediction-intervals/
-#' https://book.stat420.org/multiple-linear-regression.html
-#' 
-#' calculate the mean squared residuals
-#' https://book.stat420.org/multiple-linear-regression.html
-#' 
-#' @param obs_data - dataset used to fit the model
-#' @param pred_data - dataset with new values of the predictor variables
-#' @param obs_resp - name of the observed respond variable
-#' @param pred - name of the predicted response variable
-#' 
-
-ci_lmm <- function(obs_data, pred_data, obs_resp, pred) {
+#' This function generates predicted values and 95% confidence intervals from an `lmer` model
+#' using parametric simulation via `merTools::predictInterval`. It supports both marginal and
+#' group-specific (conditional) predictions.
+#'
+#' @param model A fitted `lmer` model object.
+#' @param data The original data used to fit the model.
+#' @param predictors Character vector of predictor names used in the model.
+#' @param vary Character vector of predictors to vary across their range (for plotting).
+#' @param n_points Integer, number of values to generate across each varying predictor.
+#' @param nsim Number of simulations for prediction intervals.
+#' @param include_re Logical, whether to include random effects (conditional predictions).
+#' @param group_levels Optional named list specifying group levels for which to generate predictions.
+#' @param seed Random seed for reproducibility.
+#'
+#' @return A `data.frame` with predictor values and prediction intervals (fit, lwr, upr).
+#' @export
+predict_lmer_with_intervals_merTools <- function(model, data, predictors,
+                                                 vary, n_points = 100, nsim = 1000,
+                                                 include_re = TRUE,
+                                                 group_levels = NULL,
+                                                 seed = 123) {
+  set.seed(seed)
   
-  # calculate the number of predictor variables and number of datapoints
-  p <- ncol(pred_data)
-  n <- nrow(obs_data)
+  group_vars <- names(ranef(model))
   
-  MSres <- sum( (obs_data[[obs_resp]] - obs_data[[pred]])^2 )/(n - p)
-  
-  # get the upper tvalue
-  tupp <- qt(p = 0.975, df = (n - p))
-  tlow <- qt(p = 0.025, df = (n - p))
-  
-  # get the design matrix: X
-  X_obs <- as.matrix(obs_data[, names(pred_data)])
-  X_obs <- cbind(1, X_obs)
-  X_pred <- t(cbind(1, as.matrix(pred_data)))
-  
-  # create upper ci values
-  CI_upp <- vector(length = ncol(X_pred))
-  CI_low <- vector(length = ncol(X_pred))
-  
-  for(i in 1:ncol(X_pred)) {
-    
-    Xt <- matrix(data = X_pred[, i], nrow = 1, ncol = ncol(X_obs))
-    X <- matrix(data = X_pred[, i], nrow = ncol(X_obs), ncol = 1)
-    
-    # get the square root term
-    sqrt_term <- sqrt(Xt%*%solve((t(X_obs)%*%X_obs))%*%X)
-    
-    # convert to a vector
-    sqrt_term <- as.vector(sqrt_term)
-    
-    CI_upp[i] <- (tupp)*MSres*sqrt_term
-    CI_low[i] <- (tlow)*MSres*sqrt_term
-    
+  if (include_re && is.null(group_levels)) {
+    stop("If include_re = TRUE, you must specify group_levels (e.g., list(Group = c('A', 'B')))")
   }
   
-  # pull CIs into a data.frame
-  CI_df <- dplyr::tibble(CI_low = CI_low,
-                         CI_upp = CI_upp)
+  if (include_re) {
+    newdata_list <- list()
+    
+    for (i in seq_along(group_levels[[1]])) {
+      newdata_tmp <- data.frame(matrix(ncol = length(predictors), nrow = n_points))
+      names(newdata_tmp) <- predictors
+      
+      for (var in predictors) {
+        if (var %in% vary) {
+          newdata_tmp[[var]] <- seq(min(data[[var]], na.rm = TRUE),
+                                    max(data[[var]], na.rm = TRUE),
+                                    length.out = n_points)
+        } else {
+          newdata_tmp[[var]] <- mean(data[[var]], na.rm = TRUE)
+        }
+      }
+      
+      for (g in group_vars) {
+        newdata_tmp[[g]] <- group_levels[[g]][i]
+      }
+      
+      newdata_tmp$.group_id <- group_levels[[g]][i]
+      newdata_list[[i]] <- newdata_tmp
+    }
+    
+    newdata <- do.call(rbind, newdata_list)
+    
+    # Ensure group vars are factors with correct levels
+    for (h in group_vars) {
+      newdata[[h]] <- factor(newdata[[h]], levels = levels(data[[h]]))
+    }
+    
+  } else {
+    newdata <- data.frame(matrix(ncol = length(predictors), nrow = n_points))
+    names(newdata) <- predictors
+    
+    for (var in predictors) {
+      if (var %in% vary) {
+        newdata[[var]] <- seq(min(data[[var]], na.rm = TRUE),
+                              max(data[[var]], na.rm = TRUE),
+                              length.out = n_points)
+      } else {
+        newdata[[var]] <- mean(data[[var]], na.rm = TRUE)
+      }
+    }
+    
+    for (g in group_vars) {
+      newdata[[g]] <- sample(x = data[[g]], 1)
+    }
+  }
   
-  return(CI_df)
+  # Run merTools::predictInterval
+  pred_mod <- merTools::predictInterval(
+    merMod = model,
+    newdata = newdata,
+    level = 0.95,
+    n.sims = nsim,
+    stat = "mean",
+    include.resid.var = FALSE,
+    which = if (include_re) "full" else "fixed"
+  )
   
+  newdata$predicted_mean <- pred_mod$fit
+  newdata$lower <- pred_mod$lwr
+  newdata$upper <- pred_mod$upr
+  
+  return(newdata)
 }

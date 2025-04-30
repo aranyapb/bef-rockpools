@@ -47,9 +47,9 @@ cond_eff_plot <- function(data_raw, data_pred,
                                           colour = "Inselberg",
                                           size = if(!is.na(size_var)){size_var}else{NULL}), 
                      width = 0.025, shape = 1, stroke = 0.5, alpha = 0.5) +
-    geom_line(data = data_pred, mapping = aes_string(x = x_var, y = y_var)) +
+    geom_line(data = data_pred, mapping = aes_string(x = x_var, y = "predicted_mean")) +
     geom_ribbon(data = data_pred, 
-                mapping = aes_string(x = x_var, ymax = "CI_upp", ymin = "CI_low"), alpha = 0.1) +
+                mapping = aes_string(x = x_var, ymax = "upper", ymin = "lower"), alpha = 0.1) +
     ggtitle(title) +
     scale_size_continuous(range = c(1, 2.5)) +
     ylab(if(!is.na(as.character(ylab))){ylab}else{NULL}) +

@@ -69,5 +69,4 @@ row.names(pca2_scores) <- NULL
 # write to a .csv file for use in later analyses
 readr::write_csv(x = pca2_scores, file = "Data/bioclim-pca-scores.csv")
 
-
 ### END

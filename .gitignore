@@ -38,9 +38,13 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
+# R profile file
+.Rprofile
+
 # Ignore the R profile
 /renv
 
 *.DS_Store
 *.png
 *.rds
+*.pdf

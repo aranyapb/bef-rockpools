@@ -1,0 +1,146 @@
+---
+title: "Exploratory Data Analysis"
+format: 
+  html:
+    embed-resources: true
+html-math-method: 
+  method: katex
+editor: source
+execute:
+  warning: false
+---
+
+This notebook documents the exploratory data analysis phase for this project. The results of this have informed our data-cleaning procedures.
+
+## Explore the data
+
+### all taxa, gamma-scale
+
+Load the data for all the taxa at the gamma-scale:
+
+```{r}
+# load the data
+gam_all <- readr::read_delim(here::here("Data/gamma-all-raw.csv", ";"))
+head(gam_all)
+```
+
+Explore the structure of the data
+
+```{r}
+# check the names
+names(gam_all)
+```
+```{r}
+# check the dimensions
+dim(gam_all)
+```
+
+```{r}
+# check the basic variable types
+dplyr::glimpse(gam_all)
+```
+
+#### Summary statistics
+
+```{r}
+# calculate basic summary statistics for each variable using summary()
+summary(gam_all)
+```
+
+#### Data visualisation
+
+Check the distribution of each numeric variable:
+
+```{r}
+# plot histograms of each variable
+
+```
+
+
+### active dispersers, gamma-scale
+
+Load the data for all the active dispersers at the gamma-scale:
+
+```{r}
+# load the data
+gam_active <- readr::read_delim(here::here("Data/gamma-active-raw.csv"), ";")
+head(gam_active)
+```
+
+Explore the structure of the data
+
+```{r}
+# check the names
+names(gam_active )
+```
+
+### passive dispersers, gamma-scale
+
+Load the data for all the passive dispersers at the gamma-scale:
+
+```{r}
+# load the data
+gam_passive <- readr::read_delim(here::here("Data/gamma-passive-raw.csv"), ";")
+head(gam_passive)
+```
+
+Explore the structure of the data
+
+```{r}
+# check the names
+names(gam_active )
+```
+
+### all taxa, alpha-scale
+
+Load the data for all taxa at the alpha-scale:
+
+```{r}
+# load the data
+alpha_all <- readr::read_delim(here::here("Data/alpha-all-raw.csv"), ";")
+head(alpha_all)
+```
+
+Explore the structure of the data
+
+```{r}
+# check the names
+names(alpha_all)
+```
+
+### active dispersers, alpha-scale
+
+Load the data for all the active dispersers at the alpha-scale:
+
+```{r}
+# load the data
+alpha_active <- readr::read_delim(here::here("Data/alpha-active-raw.csv"), ";")
+head(alpha_active)
+```
+
+Explore the structure of the data
+
+```{r}
+# check the names
+names(alpha_active)
+```
+
+### passive dispersers, alpha-scale
+
+Load the data for all the passive dispersers at the alpha-scale:
+
+```{r}
+# load the data
+alpha_passive <- readr::read_delim(here::here("Data/alpha-passive-raw.csv"), ";")
+head(alpha_passive)
+```
+
+Explore the structure of the data
+
+```{r}
+# check the names
+names(alpha_passive)
+```
+
+
+
