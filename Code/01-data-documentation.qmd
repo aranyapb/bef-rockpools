@@ -35,9 +35,9 @@ The three gamma-scale datasets have the same variables which are described below
 
 #### Inselberg:
 
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
+1. type (i.e. double, integer, character): Charachter
+2. unit: NA
+3. description: Three letter code specifying the inselberg from which the data were gathered. 
 
 #### Gamma:
 
@@ -154,45 +154,45 @@ The three alpha-scale datasets have the same variables which are described below
 
 #### Pool:
 
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
+1. type (i.e. double, integer, character): Charachter
+2. unit: NA
+3. description: Identity of the specific rock pool sampled. 
 
 #### Alpha:
 
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
+1. type (i.e. double, integer, character): Double
+2. unit: NA
+3. description: Alpha diversity for each rock pool as estimated using the Chao-1 estimator based on abundance.
 
 #### Biomass:
 
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
+1. type (i.e. double, integer, character): Double
+2. unit: mg/L
+3. description: Community-level invertebrate biomass per litre.
 
 #### Depth:
 
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
+1. type (i.e. double, integer, character): Double
+2. unit: cm
+3. description: Estimated depth for each rock pool.
 
 #### Gamma:
 
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
+1. type (i.e. double, integer, character): Double
+2. unit: NA
+3. description: Gamma diversity for each inselberg as estimated using the Chao-1 estimator based on incidence frequency. 
 
 #### PC1:
 
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
+1. type (i.e. double, integer, character): Double 
+2. unit: NA
+3. description: PC1 axis scores of the principal component analysis (PCA) of 19 different bioclimatic variables for each inselberg. 
 
 #### PC2:
 
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
+1. type (i.e. double, integer, character): Double
+2. unit: NA
+3. description:  PC2 axis scores of the principal component analysis (PCA) of 19 different bioclimatic variables for each inselberg.
 
 #### ASE:
 
