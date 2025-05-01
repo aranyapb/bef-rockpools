@@ -14,13 +14,15 @@ This notebook documents the exploratory data analysis phase for this project. Th
 
 ## Explore the data
 
+### gamma-scale
+
 ### all taxa, gamma-scale
 
 Load the data for all the taxa at the gamma-scale:
 
 ```{r}
 # load the data
-gam_all <- readr::read_delim(here::here("Data/gamma-all-raw.csv", ";"))
+gam_all <- readr::read_delim(here::here("Data-raw/gamma-all-raw.csv", ";"))
 head(gam_all)
 ```
 
@@ -63,7 +65,7 @@ Load the data for all the active dispersers at the gamma-scale:
 
 ```{r}
 # load the data
-gam_active <- readr::read_delim(here::here("Data/gamma-active-raw.csv"), ";")
+gam_active <- readr::read_delim(here::here("Data-raw/gamma-active-raw.csv"), ";")
 head(gam_active)
 ```
 
@@ -80,7 +82,7 @@ Load the data for all the passive dispersers at the gamma-scale:
 
 ```{r}
 # load the data
-gam_passive <- readr::read_delim(here::here("Data/gamma-passive-raw.csv"), ";")
+gam_passive <- readr::read_delim(here::here("Data-raw/gamma-passive-raw.csv"), ";")
 head(gam_passive)
 ```
 
@@ -91,13 +93,15 @@ Explore the structure of the data
 names(gam_active )
 ```
 
+### alpha-scale
+
 ### all taxa, alpha-scale
 
 Load the data for all taxa at the alpha-scale:
 
 ```{r}
 # load the data
-alpha_all <- readr::read_delim(here::here("Data/alpha-all-raw.csv"), ";")
+alpha_all <- readr::read_delim(here::here("Data-raw/alpha-all-raw.csv"), ";")
 head(alpha_all)
 ```
 
@@ -108,13 +112,27 @@ Explore the structure of the data
 names(alpha_all)
 ```
 
+Check the data for potential outliers:
+
+```{r}
+# check depth of the pools
+summary(alpha_all)
+```
+
+```{r}
+# check the values that were chosen for removal
+alpha_all[c(114, 102, 112), ]
+```
+
+
+
 ### active dispersers, alpha-scale
 
 Load the data for all the active dispersers at the alpha-scale:
 
 ```{r}
 # load the data
-alpha_active <- readr::read_delim(here::here("Data/alpha-active-raw.csv"), ";")
+alpha_active <- readr::read_delim(here::here("Data-raw/alpha-active-raw.csv"), ";")
 head(alpha_active)
 ```
 
@@ -131,7 +149,7 @@ Load the data for all the passive dispersers at the alpha-scale:
 
 ```{r}
 # load the data
-alpha_passive <- readr::read_delim(here::here("Data/alpha-passive-raw.csv"), ";")
+alpha_passive <- readr::read_delim(here::here("Data-raw/alpha-passive-raw.csv"), ";")
 head(alpha_passive)
 ```
 

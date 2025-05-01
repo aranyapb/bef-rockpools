@@ -3,7 +3,6 @@
 
 # prepare the environment
 taxa = "all"
-hypothesis = "1"
 source("Code/helper-prep-env.R")
 
 # specify the causal hypothesis via a dag

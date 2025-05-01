@@ -1,0 +1,148 @@
+---
+title: "Data-cleaning"
+format: 
+  html:
+    embed-resources: true
+html-math-method: 
+  method: katex
+editor: source
+execute:
+  warning: false
+---
+
+```{r}
+# load relevant libraries
+library(dplyr)
+library(readr)
+```
+
+## Gamma-scale data
+
+Load and clean the gamma-scale datasets and add to a list.
+
+```{r}
+# get a list of the data files
+files <- list.files(here::here("Data/"))
+
+# make a vector of file names for the different taxa
+tax_names <- c("all", "active", "passive")
+
+# gamma-scale
+
+# get the gamma datasets
+gam_files <- files[grepl(pattern = "gamma-", x = files)]
+
+# order the gam files by the gam names
+gam_files <- gam_files[sapply(tax_names, function(x) which(grepl(pattern = x, x = gam_files)))]
+
+# read in each file and run the cleaning functions
+dat_gam_list <- list()
+for(i in 1:length(gam_files)) {
+  
+  # gamma scale
+  dat_gam <- read_delim(here::here(paste0("Data/", gam_files[i])), delim = ";")
+  
+  # add ln-transformed variables
+  dat_gam <- 
+    dat_gam |>
+    rename(Inselberg = `Inselberg `) |>
+    mutate(loggamma = log(Gamma),
+           logprom = log(Prominence),
+           Inselberg = factor(Inselberg))
+  
+  # select the relevant columns
+  dat_gam <-
+    dat_gam |>
+    select(Inselberg, PC1, PC2, Gamma, GSE, loggamma, Prominence, logprom) |>
+    rename(inselberg = Inselberg,
+           pc1 = PC1,
+           pc2 = PC2,
+           gamma = Gamma,
+           prominence = Prominence,
+           gamma_se = GSE)
+  
+  # add the clean data to the list
+  dat_gam_list[[i]] <- dat_gam
+  
+}
+```
+
+## Alpha-scale data
+
+Load and clean the alpha-scale datasets and add to a list. The data-cleaning for the alpha-scale dataset is straightforward and involves renaming variables, transforming variables to improve linearity etc.
+
+However, notably, three data points were removed: rows 114, 102 and 112. These were removed because, during exploratory data-analysis.
+
+```{r}
+# alpha-scale
+
+# get the gamma datasets
+alph_files <- files[grepl(pattern = "alpha-", x = files)]
+
+# order the gam files by the gam names
+alph_files <- alph_files[sapply(tax_names, function(x) which(grepl(pattern = x, x = alph_files)))]
+
+# set-up the datapoints that need to be removed
+alpha_rem <- c(114, 102, 112)
+
+# read in each file and run the cleaning functions
+dat_alph_list <- list()
+for(i in 1:length(alph_files)) {
+  
+  # alpha scale 
+  dat_alph <- read_delim(here::here(paste0("Data/", alph_files[i])), delim = ";")
+  
+  # remove a datapoint without depth information
+  dat_alph <- dat_alph[-alpha_rem[i], ]
+  
+  # add ln-transformed variables
+  dat_alph <- 
+    dat_alph |>
+    mutate(logalpha = log(Alpha),
+           loggamma = log(Gamma),
+           logbiomass = log(Biomass),
+           logdepth = log(Depth),
+           Inselberg = factor(Inselberg))
+  names(dat_alph)  
+  
+  # reorder and rename the columns
+  dat_alph <- 
+    dat_alph |>
+    select(Inselberg, Pool, Depth, logdepth, 
+           Alpha, ASE, logalpha,
+           Biomass, logbiomass) |>
+    rename(inselberg = Inselberg,
+           pool = Pool,
+           depth = Depth,
+           alpha = Alpha,
+           alpha_se = ASE,
+           biomass = Biomass)
+  
+  # add the clean data to the list
+  dat_alph_list[[i]] <- dat_alph
+  
+}
+```
+
+## Merge the datasets
+
+Combine the relevant gamma-scale and alpha-scale information into a single dataset and export to the clean data zone (i.e. Data file).
+
+```{r}
+for (i in seq_along(dat_gam_list)) {
+
+  # merge the alpha and gamma scale data
+  dat_merge <- dplyr::full_join(dat_gam_list[[i]], dat_alph_list[[i]], by = "inselberg")
+  
+  # save as a .rds object
+  saveRDS(object = dat_merge, 
+          file = here::here(paste0("Data/0", i, "-", tax_names[i], "-data-clean.rds" )))
+  
+}
+```
+
+
+
+
+
+
