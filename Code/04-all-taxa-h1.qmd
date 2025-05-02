@@ -255,7 +255,7 @@ adjustmentSets(x = dag_h1b,
 
 ```{r}
 # fit the linear mixed model
-lm2 <- lmer(logdepth ~ pc2 + (1 | inselberg), data = h1_dat)
+path_lm_a <- lmer(logdepth ~ pc2 + (1 | inselberg), data = h1_dat)
 ```
 
 ```{r}
@@ -263,7 +263,7 @@ lm2 <- lmer(logdepth ~ pc2 + (1 | inselberg), data = h1_dat)
 resp_logdepth <- 
   extract_predictor_paths(predictors = c("pc2"), 
                           response = "logdepth", 
-                          model = lm2)
+                          model = path_lm_a)
 
 # view the table
 resp_logdepth
@@ -283,7 +283,7 @@ adjustmentSets(x = dag_h1b,
 
 ```{r}
 # fit the linear mixed model
-lm3 <- lmer(loggamma ~ logdepth + pc1 + pc2 + (1 | inselberg), data = h1_dat)
+path_lm_b <- lmer(loggamma ~ logdepth + pc1 + pc2 + (1 | inselberg), data = h1_dat)
 ```
 
 ```{r}
@@ -291,7 +291,7 @@ lm3 <- lmer(loggamma ~ logdepth + pc1 + pc2 + (1 | inselberg), data = h1_dat)
 resp_loggamma <- 
   extract_predictor_paths(predictors = c("logdepth", "pc1" ,"pc2"), 
                           response = "loggamma", 
-                          model = lm3)
+                          model = path_lm_b)
 
 # view the table
 resp_loggamma
