@@ -20,7 +20,7 @@ Here, we test hypothesis 2 (**H2**) on data from all taxa:
 
 *However, BEF relationships based on alpha diversity as the predictor variable (alpha BEF relationship) should not necessarily be positive since functioning may be supported locally by one or a few well adapted species. As a result, we expect that (Hypothesis 2) the link between local diversity in individual rock pools and community biomass (i.e., alpha BEF relationship) will be variable across inselbergs.*
 
-### Causal hypothesis
+## Causal hypothesis
 
 We used a Directed Acyclic graph (DAG) to represent our hypothesised causal model of the relationships among alpha diversity, pool depth and community biomass on different inselbergs:
 
@@ -43,9 +43,9 @@ impliedConditionalIndependencies(dag_h2a)
 
 However, this causal structure is straightforward and uncontroversial. We would not expect pool alpha diversity or biomass to causally affect depth or inselberg and, give the hypothesis, it makes sense to model alpha affecting biomass (although a two-way relationship is often discussed, e.g. Grace et al. 2016).
 
-### Statistical analysis
+## Statistical analysis
 
-#### Backdoor criterion
+### Backdoor criterion
 
 Based on the DAG (i.e. dag_h1b), to isolate the direct effect of alpha diversity on pool biomass requires adjusting for pool depth and inselberg via the backdoor criterion (Pearl 2009).
 
@@ -54,7 +54,7 @@ Based on the DAG (i.e. dag_h1b), to isolate the direct effect of alpha diversity
 adjustmentSets(x = dag_h2a, exposure = "Alpha", outcome = "Biomass", effect = "direct")
 ```
 
-#### Variable standardisation
+### Variable standardisation
 
 The pool biomass, pool depth and alpha diversity variables were all log-transformed (see *Exploratory Data Analysis*) to improve distributions of the variables for linear modelling. These variables were z-score transformed:
 
@@ -62,13 +62,13 @@ The pool biomass, pool depth and alpha diversity variables were all log-transfor
 # h2_dat
 h2_dat <-
   dat |>
-  dplyr::select(logbiomass, logalpha, logdepth, inselberg) |>
+  dplyr::select(logbiomass, logalpha, logdepth, inselberg, alpha_se) |>
   dplyr::mutate(logbiomass = scale(logbiomass)[, 1],
                 logalpha = scale(logalpha)[, 1],
                 logdepth = scale(logdepth)[, 1])
 ```
 
-#### Model fitting
+### Model fitting
 
 For this hypothesis, we are most interested in how alpha diversity affects pool biomass within each inselberg and how this relationship varies across inselbergs. As a result, our strategy for testing this hypothesis was as follows. First, fit a model where the slope between log-transformed alpha diversity and log-transformed pool biomass is constant across inselbergs but where the intercept varies across inselbergs (model 1):
 
@@ -82,7 +82,7 @@ Finally, compare these models using a likelihood ratio test based on the $\chi^2
 
 To fit the model, we used the *lme4* package to fit linear mixed-models to estimate the total effect of gamma diversity (log-transformed) on biomass (log-transformed):
 
-##### Model 1
+#### Model 1
 
 ```{r}
 # fit the linear mixed model
@@ -93,7 +93,7 @@ lm1 <- lmer(logbiomass ~ logalpha + logdepth + (1 | inselberg),
 
 We then examined the fit of the model to the data along with the model assumptions via a graphical analysis of the residuals.
 
-###### Assess model fit
+##### Assess model fit
 
 To assess model fit, we plotted the observed values (y-axis) versus the modeled expectations (x-axis):
 
@@ -109,7 +109,7 @@ abline(0, 1)
 piecewiseSEM::rsquared(lm1)
 ```
 
-##### Checking model assumptions
+#### Checking model assumptions
 
 ```{r}
 # check assumptions using DHARMa
@@ -131,7 +131,7 @@ plotResiduals(lm1_res)
 testDispersion(lm1_res)
 ```
 
-##### Model 2
+#### Model 2
 
 ```{r}
 # fit the linear mixed model
@@ -142,7 +142,7 @@ lm2 <- lmer(logbiomass ~ logalpha + logdepth + (1 + logalpha | inselberg),
 
 We then examined the fit of the model to the data along with the model assumptions via a graphical analysis of the residuals.
 
-###### Assess model fit
+##### Assess model fit
 
 To assess model fit, we plotted the observed values (y-axis) versus the modeled expectations (x-axis):
 
@@ -158,7 +158,7 @@ abline(0, 1)
 piecewiseSEM::rsquared(lm2)
 ```
 
-##### Checking model assumptions
+#### Checking model assumptions
 
 ```{r}
 # check assumptions using DHARMa
@@ -180,7 +180,7 @@ plotResiduals(lm2_res)
 testDispersion(lm2_res)
 ```
 
-##### Hypothesis testing
+#### Hypothesis testing
 
 To test the hypothesis, we compared **Model 1** to **Model 2** using a likelihood ratio test using the `anova` function:
 
@@ -189,7 +189,166 @@ To test the hypothesis, we compared **Model 1** to **Model 2** using a likelihoo
 anova(lm1, lm2)
 ```
 
-These likelihood ratio tests showed that only the log-transformed pool depth significantly affected the log-transformed. Therefore, there was no effect of log-transformed gamma diversity on log-transformed biomass.
+This shows that the model where the slope between log-transformed alpha diversity and log-transformed pool biomass was allowed to vary fit the data significantly better which supports our hypothesis.
+
+#### Sensitivity analyses
+
+The assumptions of **Model 2** looked questionable based on the simulated prediction-residual plots. The residual pattern can sometimes be indicative of missing predictor variables or non-linear relationships that are not included. To address this problem, we performed a model selection procedure:
+
+```{r}
+# create list of model formulas
+model2_list <- list(
+   m1 = logbiomass ~ logalpha + logdepth + (1 + logalpha | inselberg),
+   m2 = logbiomass ~ logalpha + bs(logdepth, degree = 2) + (1 + logalpha | inselberg),
+   m3 = logbiomass ~ bs(logalpha, degree = 2) + logdepth + (1 + logalpha | inselberg),
+   m4 = logbiomass ~ bs(logalpha, degree = 2) + bs(logdepth, degree = 2) + (1 + logalpha | inselberg)
+)
+
+# fit and compare the models
+model2_comparison <- 
+  fit_and_compare_lmm_models(formulas = model2_list, 
+                             data = h2_dat, n_sim = 1000)
+
+# check the model outputs
+model2_comparison$comparison
+```
+
+```{r}
+# plot the model diagnostics
+model2_comparison$models$m1 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+```{r}
+# plot the model diagnostics
+model2_comparison$models$m2 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+```{r}
+# plot the model diagnostics
+model2_comparison$models$m3 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+```{r}
+# plot the model diagnostics
+model2_comparison$models$m4 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+Based on this model fitting, using a basis-spline (degree = 2) to model the relationship between log-transformed alpha diversity and log-transformed biomass lead to a properly specified model. Moreover, this model had a slightly lower Akaike's Information Criterio value than the model without the basis-spline. Given this, we repeated our analysis but, this time, using a basis-spline.
+
+#### Model 1 (with basis-spline)
+
+```{r}
+# fit the linear mixed model
+lm1_bs <- lmer(logbiomass ~ bs(logalpha, degree = 2) + logdepth + (1 | inselberg), 
+               data = h2_dat,
+               REML = FALSE)
+```
+
+##### Assess model fit
+
+To assess model fit, we plotted the observed values (y-axis) versus the modeled expectations (x-axis):
+
+```{r}
+# plot the model fit
+plot(predict(lm1_bs), h2_dat$logbiomass, 
+     xlab = "Predicted E(log(biomass)) (mg)", ylab = "Observed log(biomass) (mg)")
+abline(0, 1)
+```
+
+```{r}
+# check the rsquared value
+piecewiseSEM::rsquared(lm1_bs)
+```
+
+#### Checking model assumptions
+
+```{r}
+# check assumptions using DHARMa
+
+# simulate residuals
+lm1_bs_res <- simulateResiduals(fittedModel = lm1_bs, n = 2000)
+
+# qq plot residuals
+plotQQunif(lm1_bs_res)
+```
+
+```{r}
+# residuals versus predicted values
+plotResiduals(lm1_bs_res)
+```
+
+```{r}
+# test for overdispersion
+testDispersion(lm1_bs_res)
+```
+
+#### Model 2 (with basis-spline)
+
+```{r}
+# fit the linear mixed model
+lm2_bs <- lmer(logbiomass ~ bs(logalpha, degree = 2) + logdepth + (1 + logalpha | inselberg), 
+               data = h2_dat,
+               REML = FALSE)
+```
+
+We then examined the fit of the model to the data along with the model assumptions via a graphical analysis of the residuals.
+
+##### Assess model fit
+
+To assess model fit, we plotted the observed values (y-axis) versus the modeled expectations (x-axis):
+
+```{r}
+# plot the model fit
+plot(predict(lm2_bs), h2_dat$logbiomass, 
+     xlab = "Predicted E(log(biomass)) (mg)", ylab = "Observed log(biomass) (mg)")
+abline(0, 1)
+```
+
+```{r}
+# check the rsquared value
+piecewiseSEM::rsquared(lm2_bs)
+```
+
+#### Checking model assumptions
+
+```{r}
+# check assumptions using DHARMa
+
+# simulate residuals
+lm2_bs_res <- simulateResiduals(fittedModel = lm2_bs, n = 2000)
+
+# qq plot residuals
+plotQQunif(lm2_bs_res)
+```
+
+```{r}
+# residuals versus predicted values
+plotResiduals(lm2_bs_res)
+```
+
+```{r}
+# test for overdispersion
+testDispersion(lm2_bs_res)
+```
+
+#### Hypothesis testing
+
+To test the hypothesis based on the models with the basis-splines, we compared **Model 1** to **Model 2** using a likelihood ratio test using the `anova` function:
+
+```{r}
+# hypothesis test
+anova(lm1_bs, lm2_bs)
+```
+
+Even with when modeling the effect of log-transformed alpha diversity on log-transformed pool biomass non-linearly using a basis spline, the linear random slope offset (which allows the effect to vary across inselbergs) fit the data significantly better which supports the hypothesis. Given that using the basis-spline did not change our conclusions, we stick with the simpler model.
 
 ##### Path coefficients
 
@@ -197,12 +356,12 @@ Our main hypothesis test (i.e. the effect on log-transformed gamma diversity on 
 
 ###### Response: Biomass
 
-The model that we fit (lm1) is sufficient to estimate the direct effects of log-transformed gamma diversity, log-transformed depth, PC1 and PC2 on biomass. This is shown if we set all four variables as exposures in the *adjustmentSets* function and no variable are returned. This implies that all relevant variables for estimating these direct effects are included based on the DAG:
+The model that we fit (lm2) is sufficient to estimate the direct effects of log-transformed alpha diversity, log-transformed depth and inselberg on log-transformed biomass. This is shown if we set these three variables as exposures in the *adjustmentSets* function and no variable are returned. This implies that all relevant variables for estimating these direct effects are included based on the DAG:
 
 ```{r}
 # check the adjustment sets
-adjustmentSets(x = dag_h1b, 
-               exposure = c("PC1", "Gamma", "Depth", "PC2"), 
+adjustmentSets(x = dag_h2a, 
+               exposure = c("Alpha", "Inselberg", "Depth"), 
                outcome = "Biomass", 
                effect = "direct")
 ```
@@ -212,108 +371,96 @@ Based on this model, we can then make a table of the relevant path coefficients:
 ```{r}
 # show table with relevant paths
 resp_logbiomass <- 
-  extract_predictor_paths(predictors = c("loggamma", "logdepth", "pc1", "pc2"), 
+  extract_predictor_paths(predictors = c("logalpha", "logdepth"), 
                           response = "logbiomass", 
-                          model = lm1)
+                          model = lm2)
 
 # view the table
 resp_logbiomass
 ```
 
-###### Response: Depth
+###### Response: Alpha
 
-To estimate the path from PC2 to log-transformed pool depth, no adjustment sets are necessary:
+To estimate the path from log-transformed pool depth to log-transformed alpha requires Inselberg to be adjusted for which is done with the random intercept.
 
 ```{r}
 # check the adjustment sets
-adjustmentSets(x = dag_h1b, 
-               exposure = c("PC1"), 
-               outcome = "Depth", 
+adjustmentSets(x = dag_h2a, 
+               exposure = c("Depth"), 
+               outcome = "Alpha", 
                effect = "direct")
 ```
 
 ```{r}
 # fit the linear mixed model
-lm2 <- lmer(logdepth ~ pc2 + (1 | inselberg), data = h1_dat)
+path_lm_a <- lmer(logalpha ~ logdepth + (1 | inselberg), data = h2_dat)
 ```
 
 ```{r}
 # show table with relevant paths
-resp_logdepth <- 
-  extract_predictor_paths(predictors = c("pc2"), 
-                          response = "logdepth", 
-                          model = lm2)
+resp_logalpha <- 
+  extract_predictor_paths(predictors = c("logdepth"), 
+                          response = "logalpha", 
+                          model = path_lm_a)
 
 # view the table
-resp_logdepth
+resp_logalpha
 ```
 
-###### Response: Gamma
-
-To estimate the paths going from log-transformed pool depth, PC1 and PC2 to log-transformed gamma diversity, we need a model with log-transformed gamma diversity and these three variables as predictor variables. It is not necessary to include log-transformed biomass.
-
-```{r}
-# check the adjustment sets
-adjustmentSets(x = dag_h1b, 
-               exposure = c("PC1", "PC2", "Depth"), 
-               outcome = "Gamma", 
-               effect = "direct")
-```
-
-```{r}
-# fit the linear mixed model
-lm3 <- lmer(loggamma ~ logdepth + pc1 + pc2 + (1 | inselberg), data = h1_dat)
-```
-
-```{r}
-# show table with relevant paths
-resp_loggamma <- 
-  extract_predictor_paths(predictors = c("logdepth", "pc1" ,"pc2"), 
-                          response = "loggamma", 
-                          model = lm3)
-
-# view the table
-resp_loggamma
-```
-
-Therefore, the relevant path coefficients associated with dag_h1b are summarised here:
+Therefore, the relevant path coefficients associated with dag_h1b are summarised here. We exclude inselberg as this is incorporated as a random effect and, given that it is a categorical variable, the path coefficient are less relevant for interpretation.
 
 ```{r}
 # bind the tables together
 dplyr::bind_rows(resp_logbiomass,
-                 resp_loggamma,
-                 resp_logdepth)
+                 resp_logalpha)
 ```
 
 
 #### Data visualisation
 
-We plotted the model predictions for the effect log-transformed gamma diversity on log-transformed pool biomass while holding PC1, pc1 and log-transformed pool depth at their mean values:
+We plotted the model predictions for the effect of log-transformed gamma alpha on log-transformed pool biomass across inselbergs whilst holding log-transformed depth at the mean value.
 
 ```{r}
 # plot fig 5
 
 # get model predictions
-lm1_pred <-
-  predict_lmer_with_intervals_merTools(model = lm1, 
-                                       data = h1_dat, 
-                                       predictors = c("loggamma", "pc1", "pc2", "logdepth"),
-                                       vary = "loggamma", 
+lm2_pred <-
+  predict_lmer_with_intervals_merTools(model = lm2, 
+                                       data = h2_dat, 
+                                       predictors = c("logalpha", "logdepth"),
+                                       vary = "logalpha", 
                                        n_points = 100, nsim = 1000,
-                                       include_re = FALSE,
-                                       group_levels = NULL,
+                                       include_re = TRUE,
+                                       group_levels = list(inselberg = as.character(unique(h2_dat$inselberg))),
                                        seed = 123)
 
-# plot the data with the model predictions
+# make the plot
 p1 <- 
-  cond_eff_plot(data_raw = h1_dat, data_pred = lm1_pred, 
-                x_var = "loggamma", y_var = "logbiomass", 
-                xlab = gamma_div, ylab = ln_biomass, size_var = "gamma_se",
-                taxa = taxa, labels = c("a", "b", "c") )
-p1
+  ggplot() +
+  geom_point(data = h2_dat, 
+             aes(x = logalpha, y = logbiomass, colour = inselberg, size = alpha_se), 
+             shape = 1, stroke = 0.5, alpha = 0.5) +
+  geom_line(data = lm2_pred, aes(x = logalpha, y = predicted_mean, colour = inselberg),
+            show.legend = FALSE) +
+  geom_ribbon(data = lm2_pred, 
+              aes(x = logalpha, ymax = upper, ymin = lower, fill = inselberg), 
+              alpha = 0.1, show.legend = FALSE) +
+  ggtitle("All taxa") +
+  ylab(ln_biomass) +
+  xlab(" ") +
+  scale_colour_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
+  scale_fill_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
+  guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 1, stroke = 1),
+                                              nrow = 1))+
+  scale_size_continuous(range = c(1, 2.5)) +
+  theme_meta() +
+  theme(legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5, size = 11))
+plot(p1)
+```
 
+```{r}
 # save the figure as a .rds file
 saveRDS(object = p1[[1]], file = paste0("Figures/fig_5", p1[[2]], ".rds"))
 ```
-
 

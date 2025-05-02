@@ -309,7 +309,7 @@ dplyr::bind_rows(resp_logbiomass,
 
 #### Data visualisation
 
-We plotted the model predictions for the effect log-transformed gamma diversity on log-transformed pool biomass while holding PC1, pc1 and log-transformed pool depth at their mean values:
+We plotted the model predictions for the effect of log-transformed gamma diversity on log-transformed pool biomass while holding PC1, PC2 and log-transformed pool depth at their mean values:
 
 ```{r}
 # plot fig 5
