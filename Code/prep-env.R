@@ -1,6 +1,6 @@
 
 # function to prep the environment
-# taxa: "all", "active", "passive"
+# taxa: "all", "active", "passive" (or "")
 # load relevant libraries
 library(lme4)
 library(dagitty)
@@ -28,7 +28,10 @@ files <- list.files(here::here("Data/"))
 file_sel <- files[grepl(pattern = paste0(taxa, "-data-clean.rds"), files)]
 
 # load the alpha-scale data
-dat <- readRDS(here::here(file.path("Data", file_sel)))
+if (taxa != "") {
+  dat <- readRDS(here::here(file.path("Data", file_sel)))
+}
+
 
 # set-up frequently used axis labels
 alpha_div <- expression("ln("~alpha~"-diversity )")

@@ -1,0 +1,304 @@
+---
+title: "Active dispersers: Hypothesis 3"
+format: 
+  html:
+    embed-resources: true
+html-math-method: 
+  method: katex
+editor: source
+execute:
+  warning: false
+---
+
+```{r}
+# prepare the environment
+taxa = "all"
+source(here::here("Code/prep-env.R"))
+```
+
+Here, we test hypothesis 3 (**H3**) on data from all taxa:
+
+*Finally, we expect that (Hypothesis 3) reduced accessibility of local patches to the local species pool might weaken the alpha BEF relationship. Active dispersers found in rock pools include a broad range of aquatic insects with flying adult life stages. They typically recolonize the habitat during every inundation from more permanent water sources that exist in the landscape matrix between inselbergs (Vanschoenwinkel et al., 2007). For them we expect that the prominence of the inselberg (i.e., the height above the surrounding landscape) might provide a colonisation barrier, potentially weakening the BEF relationship via reduced accessibility to the local species pool. Passive dispersers, in turn, include mainly worms and crustaceans that survive dry periods as dormant propagules inside the rock pools on the inselbergs (Jocqué et al., 2010). For them, building up biomass will depend on the identity and the combinations of species emerging from the local propagule banks (Pinceel et al., 2021) and not from dispersal from other aquatic habitats in the landscape or from other inselbergs, which have been shown to be extremely rare (Vanschoenwinkel et al., 2011).*
+
+To test this hypothesis, we extracted inselberg prominence, a measure of the height of an inselberg above the surrounding landscape. We estimated inselberg prominence as the maximum height of the inselberg above the surrounding landscape matrix using the GoogleEarth digital elevation model. We then correlated inselberg prominence with the alpha BEF slope (i.e. the standardised slope between log-transformed alpha diversity and log-transformed pool biomass) 
+
+## Load the relevant data and bind the relevant covariates
+
+```{r}
+# load the active disperser bef slopes
+active_beta <- readRDS(here::here("Data/active-dispersers-beta-h3-data.rds"))
+head(active_beta)
+
+# add a disperser identifier
+active_beta$dispersal <- "active"
+```
+
+```{r}
+# load the passive disperser bef slopes
+passive_beta <- readRDS(here::here("Data/passive-dispersers-beta-h3-data.rds"))
+head(passive_beta)
+
+# add a disperser identifier
+passive_beta$dispersal <- "passive"
+```
+
+```{r}
+# bind these data rowwise and join the prominence data
+beta_dat <- dplyr::bind_rows(active_beta, passive_beta)
+
+# join the prominence data
+beta_dat <- 
+  dplyr::full_join(beta_dat,
+                   dat |> 
+                     dplyr::select(inselberg, prominence, logprom, pc1, pc2) |>
+                     dplyr::distinct(),
+                   by = "inselberg") |>
+  dplyr::select(inselberg, prominence, logprom, pc1, pc2, dispersal, alpha_bef_slope)
+
+# check the data
+beta_dat
+```
+
+## Visualise the relevant relationship
+
+```{r}
+# plot prominence versus alpha_bef slope
+ggplot(data = beta_dat,
+       mapping = aes(x = logprom, y = alpha_bef_slope, colour = dispersal)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~dispersal)
+```
+
+## Statistical analysis
+
+### Variable standardisation
+
+We standardised log-transformed prominence prior to the analysis. The slopes between log-transformed alpha diversity and log-transformed pool biomass are already standardised slopes and, as a result, we leave these untransformed.
+
+```{r}
+# h3_dat_active
+h3_dat_active <-
+  beta_dat |>
+  dplyr::filter(dispersal == "active") |>
+  dplyr::mutate(logprom = scale(logprom)[, 1],
+                pc1 = scale(pc1)[, 1],
+                pc2 = scale(pc2)[, 1])
+
+# h3_dat_passive
+h3_dat_passive <-
+  beta_dat |>
+  dplyr::filter(dispersal == "passive") |>
+  dplyr::mutate(logprom = scale(logprom)[, 1],
+                pc1 = scale(pc1)[, 1],
+                pc2 = scale(pc2)[, 1])
+```
+
+### Model fitting
+
+For this hypothesis, we expect that the slope between log-transformed alpha diversity and log-transformed biomass (i.e. alpha BEF slope) will be negatively correlated with inselberg prominence in active dispersers but not in passive dispersers. To test this, we assess the relationship between log-transformed prominence and the standard alpha BEF slope in active and passive dispersers separately. In addition, we include the climate PC axes as covariates:
+
+#### Model 1: Active dispersers
+
+```{r}
+# fit the linear model
+lm1 <- lm(alpha_bef_slope ~ logprom + pc1 + pc2, data = h3_dat_active)
+```
+
+We then examined the fit of the model to the data along with the model assumptions via a graphical analysis of the residuals.
+
+##### Assess model fit
+
+To assess model fit, we plotted the observed values (y-axis) versus the modeled expectations (x-axis):
+
+```{r}
+# plot the model fit
+plot(predict(lm1), h3_dat_active$alpha_bef_slope, 
+     xlab = "Predicted E(slope)", ylab = "Observed slope")
+abline(0, 1)
+```
+
+```{r}
+# check the rsquared value
+summary(lm1)$r.squared
+```
+
+#### Checking model assumptions
+
+```{r}
+# check assumptions using graphical analysis of the residuals
+plot(lm1, 1)
+```
+
+```{r}
+# check assumptions using graphical analysis of the residuals
+plot(lm1, 2)
+```
+
+```{r}
+# check assumptions using graphical analysis of the residuals
+plot(lm1, 3)
+```
+
+
+#### Model 2: Passive dispersers
+
+```{r}
+# fit the linear model
+lm2 <- lm(alpha_bef_slope ~ logprom + pc1 + pc2, data = h3_dat_passive)
+```
+
+We then examined the fit of the model to the data along with the model assumptions via a graphical analysis of the residuals.
+
+##### Assess model fit
+
+To assess model fit, we plotted the observed values (y-axis) versus the modeled expectations (x-axis):
+
+```{r}
+# plot the model fit
+plot(predict(lm2), h3_dat_passive$alpha_bef_slope, 
+     xlab = "Predicted E(slope)", ylab = "Observed slope")
+abline(0, 1)
+```
+
+```{r}
+# check the rsquared value
+summary(lm2)$r.squared
+```
+
+#### Checking model assumptions
+
+```{r}
+# check assumptions using graphical analysis of the residuals
+plot(lm2, 1)
+```
+
+```{r}
+# check assumptions using graphical analysis of the residuals
+plot(lm2, 2)
+```
+
+```{r}
+# check assumptions using graphical analysis of the residuals
+plot(lm2, 3)
+```
+
+#### Hypothesis testing
+
+Under our hypothesis, we expect that the effect of log-transformed prominence will be significantly negative in active dispersers. In this model, the effect of log-transformed prominence is negative and marginally significant (P = 0.06).
+
+```{r}
+# check model summary for model 1
+summary(lm1)
+```
+
+In addition, we expected that there would be no effect of log-transformed prominence in passive dispersers. This was supported as there was no evidence for an effect of log-transformed prominence in passive dispersers (P = 0.46).
+
+```{r}
+# check model summary for model 2
+summary(lm2)
+```
+
+## Data visualisation
+
+To visualise this result, we used partial regression plots:
+
+```{r}
+# plot fig 7: active dispersers
+
+# extract the relevant residuals
+lm1_pp_dat <- data.frame(
+  inselberg = h3_dat_active$inselberg,
+  res_x = resid(lm(logprom ~ pc1 + pc2, data = h3_dat_active)),
+  res_y = resid(lm(alpha_bef_slope ~ pc1 + pc2, data = h3_dat_active))
+)
+
+# fit a linear model
+lm1_pp <- lm(res_y ~ res_x, data = lm1_pp_dat)
+
+# get the predictions
+lm1_pred <- dplyr::tibble(res_x = seq(min(lm1_pp_dat$res_x), max(lm1_pp_dat$res_x), length.out = 100))
+lm1_pred <- dplyr::bind_cols(lm1_pred,
+                             predict(lm1_pp, newdata = lm1_pred, interval = "confidence"))
+
+# make the plot
+p1 <- 
+  ggplot() +
+  geom_point(data = lm1_pp_dat, 
+             aes(x = res_x, y = res_y, colour = inselberg), 
+             shape = 16, size = 2) +
+  geom_line(data = lm1_pred, 
+            aes(x = res_x, y = fit)) +
+  geom_ribbon(data = lm1_pred, 
+              aes(x = res_x, ymax = upr, ymin = lwr), 
+              alpha = 0.1) +
+  ggtitle("Active dispersers") +
+  ylab(paste0(ln_biomass, " (residuals)")) +
+  xlab("ln( Prominence ) (m) (residuals)") +
+  scale_colour_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
+  scale_fill_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
+  guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 1, stroke = 1),
+                                              nrow = 1)) +
+  theme_meta() +
+  theme(legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5, size = 11))
+plot(p1)
+```
+
+```{r}
+# save the figure as a .rds file
+saveRDS(object = p1,
+        here::here("Figures/fig_7a.rds"))
+```
+
+
+```{r}
+# plot fig 7: passive dispersers
+
+# extract the relevant residuals
+lm2_pp_dat <- data.frame(
+  inselberg = h3_dat_passive$inselberg,
+  res_x = resid(lm(logprom ~ pc1 + pc2, data = h3_dat_passive)),
+  res_y = resid(lm(alpha_bef_slope ~ pc1 + pc2, data = h3_dat_passive))
+)
+
+# fit a linear model
+lm2_pp <- lm(res_y ~ res_x, data = lm2_pp_dat)
+
+# get the predictions
+lm2_pred <- dplyr::tibble(res_x = seq(min(lm2_pp_dat$res_x), max(lm2_pp_dat$res_x), length.out = 100))
+lm2_pred <- dplyr::bind_cols(lm2_pred,
+                             predict(lm2_pp, newdata = lm2_pred, interval = "confidence"))
+
+# make the plot
+p2 <- 
+  ggplot() +
+  geom_point(data = lm2_pp_dat, 
+             aes(x = res_x, y = res_y, colour = inselberg), 
+             shape = 16, size = 2) +
+  geom_line(data = lm2_pred, 
+            aes(x = res_x, y = fit)) +
+  geom_ribbon(data = lm2_pred, 
+              aes(x = res_x, ymax = upr, ymin = lwr), 
+              alpha = 0.1) +
+  ggtitle("Passive dispersers") +
+  ylab(paste0(ln_biomass, " (residuals)")) +
+  xlab("ln( Prominence ) (m) (residuals)") +
+  scale_colour_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
+  scale_fill_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
+  guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 1, stroke = 1),
+                                              nrow = 1)) +
+  theme_meta() +
+  theme(legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5, size = 11))
+plot(p2)
+```
+
+```{r}
+# save the figure as a .rds file
+saveRDS(object = p2,
+        here::here("Figures/fig_7b.rds"))
+```
+
+
+
