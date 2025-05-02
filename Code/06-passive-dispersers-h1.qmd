@@ -1,5 +1,5 @@
 ---
-title: "all-taxa-hypothesis-1"
+title: "Passive dispersers: Hypothesis 1"
 format: 
   html:
     embed-resources: true
@@ -12,10 +12,9 @@ execute:
 
 ```{r}
 # prepare the environment
-taxa = "all"
+taxa = "passive"
 source(here::here("Code/prep-env.R"))
 ```
-## Hypothesis 1: All taxa
 
 We start by testing hypothesis 1 (**H1**) on data from all taxa:
 

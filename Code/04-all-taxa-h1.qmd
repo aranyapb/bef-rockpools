@@ -1,0 +1,340 @@
+---
+title: "All taxa: Hypothesis 1"
+format: 
+  html:
+    embed-resources: true
+html-math-method: 
+  method: katex
+editor: source
+execute:
+  warning: false
+---
+
+```{r}
+# prepare the environment
+taxa = "all"
+source(here::here("Code/prep-env.R"))
+```
+
+We start by testing hypothesis 1 (**H1**) on data from all taxa:
+
+*We hypothesised that (**H1**) the relationship between gamma diversity and community biomass (i.e., gamma BEF relationship) would be positive because larger local species pools increase the likelihood that high functioning species (selection effects); or sets of species that together lead to high functioning (complementarity effects) will be present.*
+
+### Causal hypothesis
+
+We used a Directed Acyclic graph (DAG) to represent our hypothesised causal model of the relationships among gamma diversity, pool depth, community biomass and climate variables (quantified as Principal Component axes):
+
+```{r}
+# specify the causal hypothesis via a dag
+
+# causal hypothesis 1:
+
+# create the model using dagitty
+dag_h1a <- get_dag_h1a()
+
+# plot the model
+plot(dag_h1a)
+```
+
+We tested the fit between this DAG and the data using conditional independence tests. Specifically, this DAG implies the following conditional independencies:
+
+```{r}
+# check the implied conditional independencies
+impliedConditionalIndependencies(dag_h1a)
+```
+
+To test these conditional independencies, we used Pearson correlation tests. For each conditional independence statement, we considered failure to reject the null hypothesis (P > 0.05) of zero correlation (i.e. $\rho = 0$) as the data being consistent with the DAG. The P-values were corrected for multiple testing using Bonferroni's method. In addition, we used Fisher's combined probability test to determine whether the data were consistent with the DAG.
+
+```{r}
+# test the causal hypothesis via the conditional independencies
+
+# 1. test unconditional independence: Depth ⊥ PC1
+test1 <- cor.test(dat$logdepth, dat$pc1)
+
+# 2. test unconditional independence: Depth ⊥ PC2
+test2 <- cor.test(dat$logdepth, dat$pc2)
+
+# 3. test conditional independence: PC1 ⊥ PC2
+test3 <- cor.test(dat$pc1, dat$pc2)
+
+# extract the p-value
+test_p <- sapply(list(test1, test2, test3), function(x) x[["p.value"]])
+
+# run a bonferroni correction
+test_p_adj <- p.adjust(test_p, method = "bonferroni")
+round(test_p_adj, 6)
+```
+
+Based on the individual tests, the second conditional independence statement was rejected (i.e. the logarithm of pool depth was significantly correlated with PC2). The Fisher's combined probability test also indicated that the data were not consistent with the DAG.
+
+```{r}
+# run the fisher's combined test
+fisher_combined_test(p_values = test_p)
+```
+
+Given this, we revised the DAG by adding the plausible link between PC2, which captures an aridity gradient, and pool depth:
+
+```{r}
+# revise the causal hypothesis to account for the failed tests
+
+# causal hypothesis 2:
+
+# create the model using dagitty
+dag_h1b <- get_dag_h1b()
+
+# plot the model
+plot(dag_h1b)
+```
+
+We then tested the fit between this DAG and the data using conditional independence tests. Specifically, this DAG implies the following conditional independencies:
+
+```{r}
+# check the implied conditional independencies
+impliedConditionalIndependencies(dag_h1b)
+```
+
+Again, we tested these conditional independence statements using Pearson correlation tests and using Fisher's combined probability test.
+
+```{r}
+# test the revised causal hypothesis via the conditional independencies
+
+# 1. test unconditional independence: Depth ⊥ PC1
+test1 <- cor.test(dat$logdepth, dat$pc1)
+
+# 2. test conditional independence: PC1 ⊥ PC2
+test2 <- cor.test(dat$pc1, dat$pc2)
+
+# extract the p-value
+test_p <- sapply(list(test1, test2), function(x) x[["p.value"]])
+
+# run a bonferroni correction
+test_p_adj <- p.adjust(test_p, method = "bonferroni")
+round(test_p_adj, 6)
+```
+
+```{r}
+# run the fisher's combined test
+fisher_combined_test(p_values = test_p)
+```
+
+Based on these tests, the data were consistent with this DAG.
+
+### Statistical analysis
+
+#### Backdoor criterion
+
+Based on the DAG (i.e. dag_h1b), to isolate the total effect of gamma on pool biomass requires adjusting for pool depth, PC1 and PC2 via the backdoor criterion (Pearl 2009). In addition, given that there are multiple pools for each inselberg, we chose to model the inselberg as a random intercept.
+
+```{r}
+# adjustment set: PC1, PC2
+adjustmentSets(x = dag_h1b, exposure = "Gamma", outcome = "Biomass", effect = "total")
+```
+
+#### Variable standardisation
+
+The pool biomass, pool depth and gamma diversity variables were all log-transformed (see *Exploratory Data Analysis*) to improve distributions of the variables for linear modelling. In addition, the logarithms of pool biomass, pool depth and gamma diversity along with PC1 and PC2 were all z-score transformed:
+
+```{r}
+# h1_dat
+h1_dat <-
+  dat |>
+  dplyr::select(logbiomass, loggamma, logdepth, pc1, pc2, inselberg, gamma_se) |>
+  dplyr::mutate(logbiomass = scale(logbiomass)[, 1],
+                loggamma = scale(loggamma)[, 1],
+                logdepth = scale(logdepth)[, 1],
+                pc1 = scale(pc1)[, 1],
+                pc2 = scale(pc2)[, 1])
+```
+
+#### Model fitting
+
+To fit the model, we used the *lme4* package to fit linear mixed-models to estimate the total effect of gamma diversity (log-transformed) on biomass (log-transformed):
+
+```{r}
+# fit the linear mixed model
+lm1 <- lmer(logbiomass ~ loggamma + logdepth + pc1 + pc2 + (1 | inselberg), data = h1_dat)
+```
+
+We then examined the fit of the model to the data along with the model assumptions via a graphical analysis of the residuals.
+
+###### Assess model fit
+
+To assess model fit, we plotted the observed values (y-axis) versus the modeled expectations (x-axis):
+
+```{r}
+# plot the model fit
+plot(predict(lm1), h1_dat$logbiomass, 
+     xlab = "Predicted E(log(biomass)) (mg)", ylab = "Observed log(biomass) (mg)")
+abline(0, 1)
+```
+
+In addition, we used the *piecewiseSEM* package to calculate the $r^2$ value for both the fixed effects (marginal) and the random effects (conditional).
+
+```{r}
+# check the rsquared value
+piecewiseSEM::rsquared(lm1)
+```
+
+This shows that the model does explain some variation in the logarithm of biomass but that most of the variance is explained by the random effects and not the fixed effects.
+
+##### Checking model assumptions
+
+In addition, we used the *DHARMa* package to help assess the model residuals as a means to test the model's assumptions. These tests showed that there were not significant problems with the model and, therefore, that the parameter estimates and standard errors are probably reliable.
+
+```{r}
+# check assumptions using DHARMa
+
+# simulate residuals
+sim_res <- simulateResiduals(fittedModel = lm1, n = 2000)
+
+# qq plot residuals
+plotQQunif(sim_res)
+```
+
+```{r}
+# residuals versus predicted values
+plotResiduals(sim_res)
+```
+
+```{r}
+# test for overdispersion
+testDispersion(sim_res)
+```
+
+##### Hypothesis testing
+
+To test the hypothesis (i.e. that the total effect of log-transformed gamma diversity would positively affect log-transformed biomass), we used a likelihood ratio test based on the $\chi^2$ distribution using the *drop1()* function:
+
+```{r}
+# hypothesis test
+drop1(lm1, test = "Chisq")
+```
+
+These likelihood ratio tests showed that only the log-transformed pool depth significantly affected the log-transformed. Therefore, there was no effect of log-transformed gamma diversity on log-transformed biomass.
+
+##### Path coefficients
+
+Our main hypothesis test (i.e. the effect on log-transformed gamma diversity on log-transformed biomass) was tested using the likelihood ratio test (see previous section). However, we also wanted to estimate the path coefficients associated with the DAG (i.e. dag_h1b). For this, we need a series of models.
+
+###### Response: Biomass
+
+The model that we fit (lm1) is sufficient to estimate the direct effects of log-transformed gamma diversity, log-transformed depth, PC1 and PC2 on biomass. This is shown if we set all four variables as exposures in the *adjustmentSets* function and no variable are returned. This implies that all relevant variables for estimating these direct effects are included based on the DAG:
+
+```{r}
+# check the adjustment sets
+adjustmentSets(x = dag_h1b, 
+               exposure = c("PC1", "Gamma", "Depth", "PC2"), 
+               outcome = "Biomass", 
+               effect = "direct")
+```
+
+Based on this model, we can then make a table of the relevant path coefficients:
+
+```{r}
+# show table with relevant paths
+resp_logbiomass <- 
+  extract_predictor_paths(predictors = c("loggamma", "logdepth", "pc1", "pc2"), 
+                          response = "logbiomass", 
+                          model = lm1)
+
+# view the table
+resp_logbiomass
+```
+
+###### Response: Depth
+
+To estimate the path from PC2 to log-transformed pool depth, no adjustment sets are necessary:
+
+```{r}
+# check the adjustment sets
+adjustmentSets(x = dag_h1b, 
+               exposure = c("PC1"), 
+               outcome = "Depth", 
+               effect = "direct")
+```
+
+```{r}
+# fit the linear mixed model
+lm2 <- lmer(logdepth ~ pc2 + (1 | inselberg), data = h1_dat)
+```
+
+```{r}
+# show table with relevant paths
+resp_logdepth <- 
+  extract_predictor_paths(predictors = c("pc2"), 
+                          response = "logdepth", 
+                          model = lm2)
+
+# view the table
+resp_logdepth
+```
+
+###### Response: Gamma
+
+To estimate the paths going from log-transformed pool depth, PC1 and PC2 to log-transformed gamma diversity, we need a model with log-transformed gamma diversity and these three variables as predictor variables. It is not necessary to include log-transformed biomass.
+
+```{r}
+# check the adjustment sets
+adjustmentSets(x = dag_h1b, 
+               exposure = c("PC1", "PC2", "Depth"), 
+               outcome = "Gamma", 
+               effect = "direct")
+```
+
+```{r}
+# fit the linear mixed model
+lm3 <- lmer(loggamma ~ logdepth + pc1 + pc2 + (1 | inselberg), data = h1_dat)
+```
+
+```{r}
+# show table with relevant paths
+resp_loggamma <- 
+  extract_predictor_paths(predictors = c("logdepth", "pc1" ,"pc2"), 
+                          response = "loggamma", 
+                          model = lm3)
+
+# view the table
+resp_loggamma
+```
+
+Therefore, the relevant path coefficients associated with dag_h1b are summarised here:
+
+```{r}
+# bind the tables together
+dplyr::bind_rows(resp_logbiomass,
+                 resp_loggamma,
+                 resp_logdepth)
+```
+
+
+#### Data visualisation
+
+We plotted the model predictions for the effect log-transformed gamma diversity on log-transformed pool biomass while holding PC1, pc1 and log-transformed pool depth at their mean values:
+
+```{r}
+# plot fig 5
+
+# get model predictions
+lm1_pred <-
+  predict_lmer_with_intervals_merTools(model = lm1, 
+                                       data = h1_dat, 
+                                       predictors = c("loggamma", "pc1", "pc2", "logdepth"),
+                                       vary = "loggamma", 
+                                       n_points = 100, nsim = 1000,
+                                       include_re = FALSE,
+                                       group_levels = NULL,
+                                       seed = 123)
+
+# plot the data with the model predictions
+p1 <- 
+  cond_eff_plot(data_raw = h1_dat, data_pred = lm1_pred, 
+                x_var = "loggamma", y_var = "logbiomass", 
+                xlab = gamma_div, ylab = ln_biomass, size_var = "gamma_se",
+                taxa = taxa, labels = c("a", "b", "c") )
+p1
+
+# save the figure as a .rds file
+saveRDS(object = p1[[1]], file = paste0("Figures/fig_5", p1[[2]], ".rds"))
+```
+
+
