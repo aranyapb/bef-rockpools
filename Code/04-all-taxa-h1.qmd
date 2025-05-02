@@ -332,9 +332,11 @@ p1 <-
                 xlab = gamma_div, ylab = ln_biomass, size_var = "gamma_se",
                 taxa = taxa, labels = c("a", "b", "c") )
 p1
-
-# save the figure as a .rds file
-saveRDS(object = p1[[1]], file = paste0("Figures/fig_5", p1[[2]], ".rds"))
 ```
 
+```{r}
+# save the figure as a .rds file
+saveRDS(object = p1[[1]], 
+        file = here::here(file.path("Figures", paste0("fig_5", p1[[2]], ".rds"))))
+```
 

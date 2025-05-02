@@ -461,6 +461,7 @@ plot(p1)
 
 ```{r}
 # save the figure as a .rds file
-saveRDS(object = p1[[1]], file = paste0("Figures/fig_5", p1[[2]], ".rds"))
+saveRDS(object = p1,
+        here::here("Figures/fig_5a.rds"))
 ```
 
