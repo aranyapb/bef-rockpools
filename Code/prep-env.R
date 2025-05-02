@@ -11,20 +11,24 @@ library(ggplot2)
 library(wesanderson)
 library(piecewiseSEM)
 
-# load relevant functions
-source("Code/helper-plotting-theme.R")
-source("Code/helper-plot-functions.R")
-source("Code/helper-ci-lmm.R")
-source("Code/helper-compare-lmms.R")
-source("Code/helper-dfbetas-lmm.R")
-source("Code/helper-get-dags.R")
-source("Code/helper-fisher-test.R")
+# get a list of the helper functions
+function_list <- list.files(here::here("Code/"))
+function_list <- function_list[grepl(pattern = "helper-", function_list)]
+
+# load the helper functions
+for (i in function_list){
+  print(i)
+  source(here::here(file.path("Code", i)))
+}
 
 # get a list of data files
-files <- list.files("Data/")
+files <- list.files(here::here("Data/"))
+
+# get the relevant file based on the taxa
+file_sel <- files[grepl(pattern = paste0(taxa, "-data-clean.rds"), files)]
 
 # load the alpha-scale data
-dat <- readRDS(paste0("Data/", files[ grepl(pattern = paste0(taxa, "-taxa-alpha.rds"), files)] ))
+dat <- readRDS(here::here(file.path("Data", file_sel)))
 
 # set-up frequently used axis labels
 alpha_div <- expression("ln("~alpha~"-diversity )")

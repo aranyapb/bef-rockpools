@@ -15,17 +15,20 @@
 #' @examples
 #' fisher_combined_test(c(0.01, 0.05, 0.10))
 fisher_combined_test <- function(p_values) {
-  if (any(p_values <= 0 | p_values > 1)) {
+  if (any(p_values < 0 | p_values > 1)) {
     stop("All p-values must be in the interval (0, 1].")
   }
   
-  fisher_stat <- -2 * sum(log(p_values))
-  df <- 2 * length(p_values)
+  # add tiny offset if p-value estimated at 0 due to numerical limitations
+  p_value_trans <- ifelse(p_values == 0, p_values + 0.000001, p_values)
+  
+  fisher_stat <- -2 * sum(log(p_value_trans))
+  df <- 2 * length(p_value_trans)
   p_value <- pchisq(fisher_stat, df = df, lower.tail = FALSE)
   
   return(list(
     statistic = round(fisher_stat, 4),
     df = df,
-    p_value = round(p_value, 6)
+    p_value = round(p_value, 5)
   ))
 }

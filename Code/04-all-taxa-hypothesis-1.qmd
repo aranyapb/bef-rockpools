@@ -13,9 +13,8 @@ execute:
 ```{r}
 # prepare the environment
 taxa = "all"
-source("Code/helper-prep-env.R")
+source(here::here("Code/prep-env.R"))
 ```
-
 ## Hypothesis 1: All taxa
 
 We start by testing hypothesis 1 (**H1**) on data from all taxa:
@@ -51,13 +50,13 @@ To test these conditional independencies, we used Pearson correlation tests. For
 # test the causal hypothesis via the conditional independencies
 
 # 1. test unconditional independence: Depth ⊥ PC1
-test1 <- cor.test(dat$logdepth, dat$PC1)
+test1 <- cor.test(dat$logdepth, dat$pc1)
 
 # 2. test unconditional independence: Depth ⊥ PC2
-test2 <- cor.test(dat$logdepth, dat$PC2)
+test2 <- cor.test(dat$logdepth, dat$pc2)
 
 # 3. test conditional independence: PC1 ⊥ PC2
-test3 <- cor.test(dat$PC1, dat$PC2)
+test3 <- cor.test(dat$pc1, dat$pc2)
 
 # extract the p-value
 test_p <- sapply(list(test1, test2, test3), function(x) x[["p.value"]])
@@ -101,10 +100,10 @@ Again, we tested these conditional independence statements using Pearson correla
 # test the revised causal hypothesis via the conditional independencies
 
 # 1. test unconditional independence: Depth ⊥ PC1
-test1 <- cor.test(dat$logdepth, dat$PC1)
+test1 <- cor.test(dat$logdepth, dat$pc1)
 
 # 2. test conditional independence: PC1 ⊥ PC2
-test2 <- cor.test(dat$PC1, dat$PC2)
+test2 <- cor.test(dat$pc1, dat$pc2)
 
 # extract the p-value
 test_p <- sapply(list(test1, test2), function(x) x[["p.value"]])
@@ -140,12 +139,12 @@ The pool biomass, pool depth and gamma diversity variables were all log-transfor
 # h1_dat
 h1_dat <-
   dat |>
-  dplyr::select(logbiomass, loggamma, logdepth, PC1, PC2, Inselberg, Gamma_SE) |>
+  dplyr::select(logbiomass, loggamma, logdepth, pc1, pc2, inselberg, gamma_se) |>
   dplyr::mutate(logbiomass = scale(logbiomass)[, 1],
                 loggamma = scale(loggamma)[, 1],
                 logdepth = scale(logdepth)[, 1],
-                PC1 = scale(PC1)[, 1],
-                PC2 = scale(PC2)[, 1])
+                pc1 = scale(pc1)[, 1],
+                pc2 = scale(pc2)[, 1])
 ```
 
 #### Model fitting
@@ -154,7 +153,7 @@ To fit the model, we used the *lme4* package to fit linear mixed-models to estim
 
 ```{r}
 # fit the linear mixed model
-lm1 <- lmer(logbiomass ~ loggamma + logdepth + PC1 + PC2 + (1 | Inselberg), data = h1_dat)
+lm1 <- lmer(logbiomass ~ loggamma + logdepth + pc1 + pc2 + (1 | inselberg), data = h1_dat)
 ```
 
 We then examined the fit of the model to the data along with the model assumptions via a graphical analysis of the residuals.
@@ -165,7 +164,8 @@ To assess model fit, we plotted the observed values (y-axis) versus the modeled 
 
 ```{r}
 # plot the model fit
-plot(predict(lm1), h1_dat$logbiomass)
+plot(predict(lm1), h1_dat$logbiomass, 
+     xlab = "Predicted E(log(biomass)) (mg)", ylab = "Observed log(biomass) (mg)")
 abline(0, 1)
 ```
 
@@ -211,11 +211,106 @@ To test the hypothesis (i.e. that the total effect of log-transformed gamma dive
 drop1(lm1, test = "Chisq")
 ```
 
-These likelihood ratio tests showed that only the log-transformed pool depth significantly affected the log-transformed. Therefore, there was no effect of log-transformed gamma diversity on log-transforemd biomass.
+These likelihood ratio tests showed that only the log-transformed pool depth significantly affected the log-transformed. Therefore, there was no effect of log-transformed gamma diversity on log-transformed biomass.
+
+##### Path coefficients
+
+Our main hypothesis test (i.e. the effect on log-transformed gamma diversity on log-transformed biomass) was tested using the likelihood ratio test (see previous section). However, we also wanted to estimate the path coefficients associated with the DAG (i.e. dag_h1b). For this, we need a series of models.
+
+###### Response: Biomass
+
+The model that we fit (lm1) is sufficient to estimate the direct effects of log-transformed gamma diversity, log-transformed depth, PC1 and PC2 on biomass. This is shown if we set all four variables as exposures in the *adjustmentSets* function and no variable are returned. This implies that all relevant variables for estimating these direct effects are included based on the DAG:
+
+```{r}
+# check the adjustment sets
+adjustmentSets(x = dag_h1b, 
+               exposure = c("PC1", "Gamma", "Depth", "PC2"), 
+               outcome = "Biomass", 
+               effect = "direct")
+```
+
+Based on this model, we can then make a table of the relevant path coefficients:
+
+```{r}
+# show table with relevant paths
+resp_logbiomass <- 
+  extract_predictor_paths(predictors = c("loggamma", "logdepth", "pc1", "pc2"), 
+                          response = "logbiomass", 
+                          model = lm1)
+
+# view the table
+resp_logbiomass
+```
+
+###### Response: Depth
+
+To estimate the path from PC2 to log-transformed pool depth, no adjustment sets are necessary:
+
+```{r}
+# check the adjustment sets
+adjustmentSets(x = dag_h1b, 
+               exposure = c("PC1"), 
+               outcome = "Depth", 
+               effect = "direct")
+```
+
+```{r}
+# fit the linear mixed model
+lm2 <- lmer(logdepth ~ pc2 + (1 | inselberg), data = h1_dat)
+```
+
+```{r}
+# show table with relevant paths
+resp_logdepth <- 
+  extract_predictor_paths(predictors = c("pc2"), 
+                          response = "logdepth", 
+                          model = lm2)
+
+# view the table
+resp_logdepth
+```
+
+###### Response: Gamma
+
+To estimate the paths going from log-transformed pool depth, PC1 and PC2 to log-transformed gamma diversity, we need a model with log-transformed gamma diversity and these three variables as predictor variables. It is not necessary to include log-transformed biomass.
+
+```{r}
+# check the adjustment sets
+adjustmentSets(x = dag_h1b, 
+               exposure = c("PC1", "PC2", "Depth"), 
+               outcome = "Gamma", 
+               effect = "direct")
+```
+
+```{r}
+# fit the linear mixed model
+lm3 <- lmer(loggamma ~ logdepth + pc1 + pc2 + (1 | inselberg), data = h1_dat)
+```
+
+```{r}
+# show table with relevant paths
+resp_loggamma <- 
+  extract_predictor_paths(predictors = c("logdepth", "pc1" ,"pc2"), 
+                          response = "loggamma", 
+                          model = lm3)
+
+# view the table
+resp_loggamma
+```
+
+Therefore, the relevant path coefficients associated with dag_h1b are summarised here:
+
+```{r}
+# bind the tables together
+dplyr::bind_rows(resp_logbiomass,
+                 resp_loggamma,
+                 resp_logdepth)
+```
+
 
 #### Data visualisation
 
-We plotted the model predictions for the effect log-transformed gamma diversity on log-transformed pool biomass while holding PC1, PC2 and log-transformed pool depth at their mean values:
+We plotted the model predictions for the effect log-transformed gamma diversity on log-transformed pool biomass while holding PC1, pc1 and log-transformed pool depth at their mean values:
 
 ```{r}
 # plot fig 5
@@ -224,7 +319,7 @@ We plotted the model predictions for the effect log-transformed gamma diversity 
 lm1_pred <-
   predict_lmer_with_intervals_merTools(model = lm1, 
                                        data = h1_dat, 
-                                       predictors = c("loggamma", "PC1", "PC2", "logdepth"),
+                                       predictors = c("loggamma", "pc1", "pc2", "logdepth"),
                                        vary = "loggamma", 
                                        n_points = 100, nsim = 1000,
                                        include_re = FALSE,
@@ -235,7 +330,7 @@ lm1_pred <-
 p1 <- 
   cond_eff_plot(data_raw = h1_dat, data_pred = lm1_pred, 
                 x_var = "loggamma", y_var = "logbiomass", 
-                xlab = gamma_div, ylab = ln_biomass, size_var = "Gamma_SE",
+                xlab = gamma_div, ylab = ln_biomass, size_var = "gamma_se",
                 taxa = taxa, labels = c("a", "b", "c") )
 p1
 

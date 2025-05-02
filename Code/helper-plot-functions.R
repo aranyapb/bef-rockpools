@@ -44,7 +44,7 @@ cond_eff_plot <- function(data_raw, data_pred,
     geom_quasirandom(data = data_raw, 
                      mapping = aes_string(x = x_var, 
                                           y = y_var, 
-                                          colour = "Inselberg",
+                                          colour = "inselberg",
                                           size = if(!is.na(size_var)){size_var}else{NULL}), 
                      width = 0.025, shape = 1, stroke = 0.5, alpha = 0.5) +
     geom_line(data = data_pred, mapping = aes_string(x = x_var, y = "predicted_mean")) +
