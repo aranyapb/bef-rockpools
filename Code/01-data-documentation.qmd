@@ -148,9 +148,9 @@ The three alpha-scale datasets have the same variables which are described below
 
 #### Inselberg:
 
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
+1. type (i.e. double, integer, character): Charachter
+2. unit: NA
+3. description: Three letter code specifying the inselberg from which the data were gathered. 
 
 #### Pool:
 
@@ -192,19 +192,19 @@ The three alpha-scale datasets have the same variables which are described below
 
 1. type (i.e. double, integer, character): Double
 2. unit: NA
-3. description:  PC2 axis scores of the principal component analysis (PCA) of 19 different bioclimatic variables for each inselberg.
+3. description: PC2 axis scores of the principal component analysis (PCA) of 19 different bioclimatic variables for each inselberg.
 
 #### ASE:
 
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
+1. type (i.e. double, integer, character): Double
+2. unit: NA
+3. description: Standard error corresponding to the alpha Chao diversity. 
 
 #### GSE:
 
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
+1. type (i.e. double, integer, character): Double
+2. unit: NA
+3. description: Standard error corresponding to the gamma Chao diversity.  
 
 
 
