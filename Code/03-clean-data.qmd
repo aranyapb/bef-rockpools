@@ -45,7 +45,7 @@ for(i in 1:length(gam_files)) {
   # add ln-transformed variables
   dat_gam <- 
     dat_gam |>
-    rename(Inselberg = `Inselberg `) |>
+   # rename(Inselberg = `Inselberg `) |>
     mutate(loggamma = log(Gamma),
            logprom = log(Prominence),
            Inselberg = factor(Inselberg))
@@ -81,9 +81,6 @@ alph_files <- files[grepl(pattern = "alpha-", x = files)]
 
 # order the gam files by the gam names
 alph_files <- alph_files[sapply(tax_names, function(x) which(grepl(pattern = x, x = alph_files)))]
-
-# set-up the datapoints that need to be removed
-alpha_rem <- c(114, 102, 112)
 
 # read in each file and run the cleaning functions
 dat_alph_list <- list()
