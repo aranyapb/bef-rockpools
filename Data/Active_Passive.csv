@@ -1,0 +1,244 @@
+Passive,Active
+Anuraeopsis,Corynoneura
+Bdelloidea1,Orthocladiinae1
+Bdelloidea2,Orthocladiinae2
+Bdelloidea3,Orthocladiinae3
+Epiphanes1,Orthocladiinae4
+Epiphanes2,Orthocladiinae5
+Epiphanes3,Orthocladiinae6
+Sinantherina,Orthocladiinae7
+Rotifera1,Orthocladiinae8
+Hexarthra,Orthocladiinae9
+Asplanchna girodi,Gymnometriocnemus
+Rotifera2,Cricotopus
+Rotifera3,Chironomidae1
+Brachionus,Chironomidae2
+Lecane,Chironominae1
+Neothrix armata,Chironomus5
+Macrothrix1,Chironominae4
+Macrothrix2,Chironominae5
+Macrothrix3,Chironominae6
+Macrothrix spinosa,Chironomus6
+Macrothrix4,Chironomus1
+Macrothrix hardingi,Chironomus2
+Macrothrix breviseta,Chironomus3
+Camptocercus,Chironomus4
+Pleuroxus,Procladius
+Pleuroxus jugosus,Tanytarsus
+Pleuroxus letourneuxi,Tanypodinae4
+Plurispina,Tanypodinae1
+Moina brachiata,Tanypodinae2
+Moina,Tanypodinae3
+Ephemeroporus,Podonominae
+Ephemeroporus cf. barroisi,Podonomus
+Daphnia jollyi,Culicidae1
+Daphnia magna,Culicidae2
+Daphnia pulicaria,Anopheles
+Daphnia obtusa,Aedes1
+Daphnia pulex,Aedes2
+Daphnia longispina,Aedes vexans
+Daphnia,Culex1
+Ceriodaphnia quadrangula,Culex2
+Ceriodaphnia dubla,Culex3
+Ceriodaphnia reticula,Culex laticinctus
+Ceriodaphnia,Culiseta longiareolata
+Alona elegans,Ceratopogonidae1
+Alona rectangula,Ceratopogonidae2
+Alona rigidicaudis,Dasyhelea pupae
+Alona diaphana,Alluaudomyia
+Alona 1,Forcipomyia
+Alona2,Dasyhelea1
+Alona3,Dasyhelea2
+Alona4,Dasyhelea3
+Alona5,Dasyhelea4
+Chydorus sphaericus,Dasyhelea5
+Chydorus,Dasyhelea6
+Leberis1,Dasyhelea7
+Leberis2,Dasyhelea8
+Scapholeberis mucronata,Dasyhelea9
+Biapertura affinis,Corethrella
+Simocephalus serrulatus,Stratiomyidae1
+Simocephalus vetulus,Stratiomyidae2
+Bosmina coregoni,Dolichopodidae1
+Bosmina,Dolichopodidae2
+Diaphanosoma excisum,Bezzia pupa
+Polyphemus pediculus,Ephydridae larva1
+Cyclestheria hislopi,Ephydridae larva2
+Caenestheriella mariae,Coleoptera1 L
+Cyzicus tetracerus,Hemibidessus A
+Limnadia badia,Celina A
+Turbellaria1,Pachydrus L
+Turbellaria2,Hydroporus LnA
+Turbellaria4,Hydroporinae1 L
+Turbellaria5,Hydroporinae2 L
+Turbellaria6,Hydroporinae3 L
+Turbellaria7,Hydroporinae4 L
+Turbellaria8,Hydroporinae5 L
+Turbellaria9,Hydroporinae6 L
+Turbellaria10,Hydroporinae9 L
+Mesostoma1,Hydroporinae10 LnA
+Mesostoma2,Gyrinidae A
+Dugesiidae,Acari10
+Typhloplanidae,Acari1
+Neotyphloplanida,Acari2
+Dalyelliidae,Acari3
+Gieysztoria1,Acari4
+Gieysztoria2,Acari5
+Sarscypridopsis1,Acari6
+Sarscypridopsis2,Acari7
+Sarscypridopsis3,Acari8
+Sarscypridopsis gregoria,Acari9
+Eucypris virens,Hydracarina1
+Eucypris,Hydracarina2
+Isocypris priomena,Hydracarina3
+Heterocypris,Hydracarina4
+Heterocypris incongruens,Prostigmata2
+Zonocypris,Sminthuridae1
+Cypridoidea,Sminthuridae2
+Cypretta1,Sminthuridae3
+Cypretta2,Sminthuridae4
+Cypridopsinae,Sminthuridae5
+Ramotha,Sminthuridae6
+Megalocypris,Sminthuridae7
+Limnocythere1,Sminthuridae8
+Limnocythere2,Sminthurus
+Bennelongia1,Dicyrtoma
+Bennelongia2,Hypogastruridae1
+Candonocypris1,Hypogastruridae2
+Candonocypris2,Hypogastruridae3
+Candonocypris3,Isotomidae1
+Cypricercus,Isotomidae2
+Ilyodromus1,Isotoma1
+Ilyodromus2,Isotoma2
+Ostracoda1,Entomobrya multifasciata
+Ostracoda2,Poduridae
+Ostracoda3,Nerthra
+Ostracoda4,Belostoma
+Ostracoda5,Microvelia
+Ostracoda6,Mesoveliidae1
+Ostracoda7,Mesoveliidae4
+Ostracoda8,Mesoveliidae2
+Ostracoda9,Mesoveliidae3
+Ostracoda10,Veliidae
+Ostracoda11,Laccotrephes ater
+Copepod,Baetidae1
+Harpacticoida1,Cloeodes
+Harpacticoida2,Baetis
+Harpacticoida3,Caenis
+Calanoida1,Cloeon1
+Calanoida2,Cloeon2
+Calanoida3,Cloeon dipterum
+Calanoida4,Anisops sardea
+Cyclopoida1,Anisops1
+Cyclopoida2,Anisops2
+Cyclopoida3,Tenagobia
+Cyclopoida4,Agraptocorixa
+Cyclopoida5,Corixidae1
+Cyclopoida6,Corixidae2
+Halicyclops1,Corixidae3
+Halicyclops2,Corixidae4
+Ectocyclops phaleratus,Buenoa
+Diaptomidae,Notonecta1
+Paradiaptomus,Notonecta2
+Thermocyclops,Hydrocanthus1 A
+Nematoda1,Hydrocanthus2 A
+Nematoda2,Hydrocanthus3 A
+Nematoda3,Hydrocanthus L
+Nematoda4,Limnocoris
+Nematoda5,Micronectidae1
+Nematoda6,Micronectidae2
+Nematoda7,Hydroglyphus1 A
+Nematoda8,Hydroglyphus2 A
+Nematoda9,Hydroglyphus3 A
+Nematoda10,Hydroglyphus4 A
+Triops australiensis,Hygrobia hermanni
+Triops cancriformis,Lestes
+Tanymastix stagnalis,Coenagrionidae2
+Branchipus schaefferi,Coenagrionidae1
+Streptocephalus purcelli,Telebasis
+Branchipodopsis female,Tramea
+Branchipodopsis drakensbergensis,Miathyria
+Brachipodopsis wolfi,Nephepeltia
+Branchipodopsis cf browni1,Orthemis
+Branchipodopsis cf browni2,Anatya
+Branchipodopsis cf browni3,Anax
+Branchinella longirostris,Sympetrum fonscolombii
+Oribatida1,Anax imperator
+Oribatida3,Erythrodiplax
+Oribatida2,Pantala
+Oribatida4,Crocothemis divisa
+Oribatida5,Hemicordulia tau
+Oribatida6,Libellulidae2
+Oribatida7,Libellulidae1
+Oribatida8,Libellulidae3
+Oribatida9,Scirtidae1 L
+Oribatida10,Elodes L
+Aquanothrus montanus,Helicopsyche
+Tardigrada1,Triplectides australis
+Tardigrada2,Planorbidae1
+Tardigrada3,Planorbidae2
+Hypsibius,Gastropoda1
+Ramazzottius,Gastropoda2
+Macrobiotus,Gastropoda3
+Diaphanosoma,Chaetogaster
+Oligochaeta1,Bulinus
+Oligochaeta2,Hydrovatus A
+Oligochaeta3,Hydraena A
+Oligochaeta4,Hydroscapha A
+Oligochaeta5,Enochrus A
+Oligochaeta6,Tropisternus A
+Nais,Hydrophilus1 L
+Aeolosomata1,Hydrophilus2 L
+Aeolosomata2,Hydrophilus3 L
+Aeolosomata3,Phaenonotum A
+Dero,Berosus1 A
+NA,Berosus2 A
+NA,Berosus3 A
+NA,Berosus4 A
+NA,Berosus larva1
+NA,Berosus larva2
+NA,Hydrochara L
+NA,Laccophilus1 A
+NA,Laccophilus2 A
+NA,Laccophilus5 A
+NA,Laccophilus4 A
+NA,Laccophilus8 A
+NA,Laccophilus3 A
+NA,Laccophilus6 A
+NA,Laccophilus7 L
+NA,Cybister L
+NA,Rhantus1 A
+NA,Rhantus2 A
+NA,Allodessus LnA
+NA,Paroster1 L
+NA,Paroster2 LnA
+NA,Sternopriscus L
+NA,Limnichidae A
+NA,Dytiscidae1 L
+NA,Dytiscidae2 A
+NA,Dytiscidae3 A
+NA,Dytiscidae4 A
+NA,Dytiscidae5 A
+NA,Dytiscidae6 A
+NA,Dytiscidae L1
+NA,Dytiscidae L2
+NA,Agabus bipustulatus A
+NA,Gerridae
+NA,Gerris gibbifer
+NA,Elminae A
+NA,Laccocoris
+NA,Pleidae2
+NA,Arrenurus
+NA,Ranatra
+NA,Orthetrum
+NA,Crambidae1
+NA,Pyralidae1
+NA,Pyralidae2
+NA,Argyroneta
+NA,Lumbriculidae2
+NA,Lumbriculidae
+NA,Hirudinea1
+NA,Hirudinea2
+NA,Amphipoda
+NA,Isopoda
+NA,Cardiidae
