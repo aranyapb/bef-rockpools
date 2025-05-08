@@ -22,9 +22,6 @@ Load the data for all the taxa at the gamma-scale:
 
 ```{r}
 # load the data
-gam_all <- readr::read_delim(here::here("Data-raw/gamma-all-raw.csv", ";"))
-head(gam_all) # This wasn't working - it was adding a / at the end of .csv? 
-
 gam_all <- readr::read_delim(here::here("Data-raw", "gamma-all-raw.csv"), delim = ";")
 head(gam_all)
 
