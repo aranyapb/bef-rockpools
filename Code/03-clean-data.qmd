@@ -45,7 +45,6 @@ for(i in 1:length(gam_files)) {
   # add ln-transformed variables
   dat_gam <- 
     dat_gam |>
-   # rename(Inselberg = `Inselberg `) |>
     mutate(loggamma = log(Gamma),
            logprom = log(Prominence),
            Inselberg = factor(Inselberg))
@@ -92,9 +91,9 @@ for(i in 1:length(alph_files)) {
   # add ln-transformed variables
   dat_alph <- 
     dat_alph |>
-    mutate(logalpha = log(Alpha),
+    mutate(logalpha = log(Alpha+1),
            loggamma = log(Gamma),
-           logbiomass = log(Biomass),
+           logbiomass = log(Biomass+1),
            logdepth = log(Depth),
            Inselberg = factor(Inselberg))
   names(dat_alph)  
