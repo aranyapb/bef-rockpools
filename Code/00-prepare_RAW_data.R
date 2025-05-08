@@ -27,7 +27,7 @@ library(readr)
 
 # ALL TAXA 
 
-BM_df <- read_csv("Data/pool_community_biomass_data.csv")
+BM_df <- read_csv("Data-raw/pool-community-biomass-data.csv")
 
 BM_df %>% ncol() # All taxa = 436
 BM_df %>% nrow() # 241 rows 
@@ -56,9 +56,9 @@ Biomass_gamma <- BM_df_1 %>%
 
 # SEPPARATING ACTIVE AND PASSIVE DISPERSERS  
 # Load data
-AP_df <- read_csv("Data/Active_Passive.csv")
+AP_df <- read_csv("Data-raw/active-passive-split-taxa.csv")
 
-BM_df <- read_csv("Data/pool_community_biomass_data.csv")
+BM_df <- read_csv("Data-raw/pool-community-biomass-data.csv")
 
 # Define labels and taxa
 labels_cols <- c("Inselberg", "Pool")
@@ -131,7 +131,7 @@ Biomass_gamma_Passive <- BM_df_Passive_1 %>%
 library(iNEXT)
 library(dplyr)
 
-ab_df <- read_csv("Data/pool_community_abundance_data.csv")
+ab_df <- read_csv("Data-raw/pool-community-abundance-data.csv")
 
 ab_df %>% ncol() # All taxa = 436 (excluding Inselberg and Pool column)
 ab_df %>% nrow() # 241 rows 
@@ -209,8 +209,8 @@ alpha_df <- alpha_df %>%
 # SEPPARATING ACTIVE AND PASSIVE DISPERSERS  
 
 # Load data
-AP_df <- read_csv("Data/Active_Passive.csv")
-ab_df <- read_csv("Data/pool_community_abundance_data.csv")
+AP_df <- read_csv("Data-raw/active-passive-split-taxa")
+ab_df <- read_csv("Data-raw/pool-community-abundance-data.csv")
 
 # Define labels and taxa
 labels_cols <- c("Inselberg", "Pool")
@@ -384,7 +384,7 @@ alpha_df_Passive <- alpha_df_Passive %>%
 library(iNEXT)
 library(dplyr)
 
-ab_df <- read_csv("Data/pool_community_abundance_data.csv")
+ab_df <- read_csv("Data-raw/pool-community-abundance-data.csv")
 
 # pools to remove - App14 has a missing depth, Kam11 is too deep and Kor13 is eutrophicated (most likely). 
 remove_pools <- c("App14", "Kam11", "Kor13")
@@ -430,8 +430,8 @@ gamma_df <- gamma_df %>%
 # SEPPARATING ACTIVE AND PASSIVE DISPERSERS  
 
 # Load data
-AP_df <- read_csv("Data/Active_Passive.csv")
-ab_df <- read_csv("Data/pool_community_abundance_data.csv")
+AP_df <- read_csv("Data-raw/active-passive-split-taxa.csv")
+ab_df <- read_csv("Data-raw/pool-community-abundance-data.csv")
 
 # Define labels and taxa
 labels_cols <- c("Inselberg", "Pool")
@@ -539,7 +539,7 @@ gamma_df_Passive <- gamma_df_Passive %>%
 # DEPTH
 #-------------------------------------------------------------------------------
 
-Raw_df <- read_csv("Data/Raw_data_Alpha.csv")
+Raw_df <- read_csv("Data-raw/raw-data-alpha.csv")
 
 # pools to remove - App14 has a missing depth, Kam11 is too deep and Kor13 is eutrophicated (most likely). 
 remove_pools <- c("App14", "Kam11", "Kor13")
@@ -560,7 +560,7 @@ depth_gamma <- depth_df %>%
 # PROMINENCE
 #-------------------------------------------------------------------------------
 
-Raw_data <- read_csv("Data/Raw_data_Gamma.csv")
+Raw_data <- read_csv("Data-raw/raw-data-gamma.csv")
 
 prom_df <- Raw_data %>% dplyr::select(Inselberg, Prominence)
 
@@ -573,7 +573,7 @@ library(raster)
 library(geodata)
 library(writexl)
 
-Raw_df_1 <- read_csv("Data/Raw_data_Gamma.csv")
+Raw_df_1 <- read_csv("Data-raw/raw-data-gamma.csv")
 
 # Loading coordinates of Inselbergs 
 coords <- Raw_df_1 %>% 
@@ -612,6 +612,10 @@ bioclim <- data.frame(extracted_df)
 colnames(bioclim)=c("Annual Tmean","Mean diurnal range","Isothermality","T seasonality","Tmax warmest month","Tmin coldest month","T annual range","Tmean wettest quarter","Tmean driest quarter","Tmean warmest quarter","Tmean coldest quarter","Annual P","P wettest month","P driest month","P seasonality","P wettest quarter","P driest quarter","P warmest quarter","P coldest quarter")
 rownames(bioclim) <- c("IVC","SPN","KAM","SWE","FRA","USA","KOR","SWA","NWA","MAL")
 print(bioclim)
+
+# write to a .csv file for use in later analyses
+readr::write_csv(x = bioclim, file = "Data-raw/bioclim-data.csv")
+
 
 #-------------------------------------------------------------------------------
 
@@ -665,7 +669,7 @@ pca2_scores <-
 row.names(pca2_scores) <- NULL
 
 # write to a .csv file for use in later analyses
-readr::write_csv(x = pca2_scores, file = "Data/bioclim_pca_scores.csv")
+readr::write_csv(x = pca2_scores, file = "Data-raw/bioclim-pca-scores.csv")
 
 #-------------------------------------------------------------------------------
 # MAKING NEW RAW DATA (Subsets) 
@@ -679,7 +683,7 @@ alpha_all_raw <- alpha_df %>%
   left_join(depth_df, by = c("Inselberg", "Pool")) %>% 
   left_join(pca2_scores, by = "Inselberg")
 
-readr::write_csv(alpha_all_raw, "Data/alpha_all_raw.csv")
+readr::write_csv(alpha_all_raw, "Data-raw/alpha-all-raw.csv")
 
 alpha_active_raw <- alpha_df_Active %>% 
   left_join(BM_df_Active_1, by = c("Inselberg", "Pool")) %>% 
@@ -687,7 +691,7 @@ alpha_active_raw <- alpha_df_Active %>%
   left_join(depth_df, by = c("Inselberg", "Pool")) %>% 
   left_join(pca2_scores, by = "Inselberg")
 
-readr::write_csv(alpha_active_raw, "Data/alpha_active_raw.csv")
+readr::write_csv(alpha_active_raw, "Data-raw/alpha-active-raw.csv")
 
 alpha_passive_raw <- alpha_df_Passive %>% 
   left_join(BM_df_Passive_1, by = c("Inselberg", "Pool")) %>% 
@@ -695,7 +699,7 @@ alpha_passive_raw <- alpha_df_Passive %>%
   left_join(depth_df, by = c("Inselberg", "Pool")) %>% 
   left_join(pca2_scores, by = "Inselberg")
 
-readr::write_csv(alpha_passive_raw, "Data/alpha_passive_raw.csv")
+readr::write_csv(alpha_passive_raw, "Data-raw/alpha-passive-raw.csv")
 
 #-------------------------------------------------------------------------------
 
@@ -707,7 +711,7 @@ gamma_all_raw <- gamma_df %>%
   left_join(pca2_scores, by = "Inselberg") %>% 
   left_join(prom_df, by = "Inselberg")
 
-readr::write_csv(gamma_all_raw, "Data/gamma_all_raw.csv")
+readr::write_csv(gamma_all_raw, "Data-raw/gamma-all-raw.csv")
 
 gamma_active_raw <- gamma_df_Active %>% 
   left_join(Biomass_gamma_Active, by = "Inselberg") %>% 
@@ -715,7 +719,7 @@ gamma_active_raw <- gamma_df_Active %>%
   left_join(pca2_scores, by = "Inselberg") %>% 
   left_join(prom_df, by = "Inselberg")
 
-readr::write_csv(gamma_active_raw, "Data/gamma_active_raw.csv")
+readr::write_csv(gamma_active_raw, "Data-raw/gamma-active-raw.csv")
 
 gamma_passive_raw <- gamma_df_Passive %>% 
   left_join(Biomass_gamma_Passive, by = "Inselberg") %>% 
@@ -723,7 +727,7 @@ gamma_passive_raw <- gamma_df_Passive %>%
   left_join(pca2_scores, by = "Inselberg") %>% 
   left_join(prom_df, by = "Inselberg")
 
-readr::write_csv(gamma_passive_raw, "Data/gamma_passive_raw.csv")
+readr::write_csv(gamma_passive_raw, "Data-raw/gamma-passive-raw.csv")
 
 #-------------------------------------------------------------------------------
 # END
