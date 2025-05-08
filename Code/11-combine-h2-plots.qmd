@@ -1,0 +1,55 @@
+---
+title: "Combine hypothesis 2 plots"
+format: 
+  html:
+    embed-resources: true
+html-math-method: 
+  method: katex
+editor: source
+execute:
+  warning: false
+---
+
+This notebook loads the plots relevant for hypothesis 2 and combines them into a single plot:
+
+```{r}
+# load relevant libraries
+library(ggpubr)
+library(ggplot2)
+
+# get a list of files
+files <- list.files(here::here("Figures/"))
+
+# get the file names for fig. 6
+fig6 <- files[ grepl(pattern = "_6[a-z]", files) ]
+
+# load the files for fig. 6
+fig6 <- lapply(fig6, function(x) {
+  
+  y <- readRDS(paste0("Figures/", x)) 
+  z <- 
+    y +
+    scale_y_continuous(limits = c(-8.2, 7.2))
+  
+  return(z)
+  
+  } )
+
+# remove background from legend
+fig6 <- lapply(fig6, function(x) {
+  x + theme(legend.key = element_blank())
+})
+
+# combine using ggarrange
+fig6 <- 
+  ggarrange(plotlist = fig6, ncol = 3, nrow = 1, labels = c("(a)", "(b)", "(c)"),
+            font.label = list(size = 11, face = "plain"),
+            widths = c(1.1, 1, 1),
+            common.legend = TRUE, legend = "bottom")
+plot(fig6)
+
+ggsave(here::here("Figures/fig_6.pdf"), 
+       fig6, units = "cm", width = 20,
+       height = 9.5)
+```
+

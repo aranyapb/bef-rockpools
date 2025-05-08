@@ -45,12 +45,10 @@ The restore() command will download the correct versions of all packages used in
 
 #### Run the scripts
 
-In the 'Code' folder, there are 10 scripts numbered 01-10 that need to be run in order. If you correctly downloaded the repository as an R-project, then the scripts should run smoothly.
+In the 'Code' folder, there are 15 Quarto notebooks. Running these in order will reproduce the analyses presented in the paper and provide additional context on the data and methods.
 
-The following two scripts need to be run three times because we do the same analysis on each of the three taxa groups i.e. all, active and passive:
 
-+ 04-fit-SEMs.R
 
-+ 06-fit-LMs.R
 
-When running the script, you will be prompted to select one of these three taxon groups.
+
+

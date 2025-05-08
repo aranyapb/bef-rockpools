@@ -210,7 +210,116 @@ To test the hypothesis (i.e. that the total effect of log-transformed gamma dive
 drop1(lm1, test = "Chisq")
 ```
 
-These likelihood ratio tests showed that only the log-transformed pool depth significantly affected the log-transformed. Therefore, there was no effect of log-transformed gamma diversity on log-transformed biomass.
+These likelihood ratio tests showed that only the PC2 climate axis significantly affected the log-transformed biomass. Therefore, there was no effect of log-transformed gamma diversity on log-transformed biomass.
+
+#### Sensitivity analyses
+
+The assumptions of the model looked questionable based on the simulated prediction-residual plots. The residual pattern can sometimes be indicative of missing predictor variables or non-linear relationships that are not included. To address this problem, we performed a model selection procedure:
+
+```{r}
+# create list of model formulas
+model_list <- list(
+   m1 = logbiomass ~ loggamma + logdepth + pc1 + pc2 + (1 | inselberg),
+   m2 = logbiomass ~ loggamma + bs(logdepth, degree = 2) + pc1 + pc2 + (1 | inselberg),
+   m3 = logbiomass ~ loggamma + logdepth + bs(pc1, degree = 2) + pc2 + (1 | inselberg),
+   m4 = logbiomass ~ loggamma + logdepth + pc1 + bs(pc2, degree = 2) + (1 | inselberg),
+   m5 = logbiomass ~ loggamma + bs(logdepth, degree = 2) + bs(pc1, degree = 2)  + pc2 + (1 | inselberg),
+   m6 = logbiomass ~ loggamma + bs(logdepth, degree = 2)  + pc1 + bs(pc2, degree = 2) + (1 | inselberg),
+   m7 = logbiomass ~ loggamma + logdepth + bs(pc1, degree = 2) + bs(pc2, degree = 2) + (1 | inselberg),
+   m8 = logbiomass ~ loggamma + bs(logdepth, degree = 2) + bs(pc1, degree = 2) + bs(pc2, degree = 2) + (1 | inselberg),
+   m9 = logbiomass ~ bs(loggamma, degree = 2) + logdepth + pc1 + bs(pc2, degree = 2) + (1 | inselberg),
+   m10 = logbiomass ~ bs(loggamma, degree = 3) + logdepth + pc1 + pc2 + (1 | inselberg)
+)
+
+# fit and compare the models
+model_comparison <- 
+  fit_and_compare_lmm_models(formulas = model_list, 
+                             data = h1_dat, n_sim = 1000)
+
+# check the model outputs
+model_comparison$comparison
+```
+
+```{r}
+# plot the model diagnostics
+model_comparison$models$m1 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+```{r}
+# plot the model diagnostics
+model_comparison$models$m9 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+```{r}
+# plot the model diagnostics
+model_comparison$models$m10 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+Modelling log-transformed gamma as a non-linear basis-spline function substantially improves the patterns in the residuals.
+
+#### Model (with basis spline)
+
+```{r}
+# fit the model with a basis spline for gamma
+lm1_bs <- lmer(logbiomass ~ bs(loggamma, degree = 3) + logdepth + pc1 + pc2 + (1 | inselberg),
+               data = h1_dat, REML = FALSE)
+```
+
+##### Assess model fit
+
+To assess model fit, we plotted the observed values (y-axis) versus the modeled expectations (x-axis):
+
+```{r}
+# plot the model fit
+plot(predict(lm1_bs), h1_dat$logbiomass, 
+     xlab = "Predicted E(log(biomass)) (mg)", ylab = "Observed log(biomass) (mg)")
+abline(0, 1)
+```
+
+```{r}
+# check the rsquared value
+piecewiseSEM::rsquared(lm1_bs)
+```
+
+#### Checking model assumptions
+
+```{r}
+# check assumptions using DHARMa
+
+# simulate residuals
+lm1_bs_res <- simulateResiduals(fittedModel = lm1_bs, n = 2000)
+
+# qq plot residuals
+plotQQunif(lm1_bs_res)
+```
+
+```{r}
+# residuals versus predicted values
+plotResiduals(lm1_bs_res)
+```
+
+```{r}
+# test for overdispersion
+testDispersion(lm1_bs_res)
+```
+
+#### Hypothesis testing
+
+To test the hypothesis (i.e. that the total effect of log-transformed gamma diversity would positively affect log-transformed biomass), we used a likelihood ratio test based on the $\chi^2$ distribution using the *drop1()* function:
+
+```{r}
+# hypothesis test
+drop1(lm1_bs, test = "Chisq")
+```
+
+These results were therefore robust to including a non-linear relationship between log-transformed gamma diversity and log-transformed biomass in the model.
+
 
 ##### Path coefficients
 
@@ -334,7 +443,8 @@ p1 <-
 p1
 
 # save the figure as a .rds file
-saveRDS(object = p1[[1]], file = paste0("Figures/fig_5", p1[[2]], ".rds"))
+saveRDS(object = p1[[1]], 
+        file = here::here(paste0("Figures/fig_5", p1[[2]], ".rds")))
 ```
 
 

@@ -1,10 +1,18 @@
-#'
-#' @title Supplementary figure examining pool sediment depth
-#' 
-#' @description Examine the relationship between pool size and sediment
-#' depth to see if this can help us explain the results
-#'
+---
+title: "Sediment-depth comparison"
+format: 
+  html:
+    embed-resources: true
+html-math-method: 
+  method: katex
+editor: source
+execute:
+  warning: false
+---
 
+This notebook documents that analysis of the comparison between sediment depth and the depth of the pool.
+
+```{r}
 # load the relevant libraries
 library(dplyr)
 library(ggplot2)
@@ -12,8 +20,12 @@ library(readr)
 library(wesanderson)
 
 # load plotting theme
-source("Code/helper-plotting-theme.R")
+source(here::here("Code/helper-plotting-theme.R"))
+```
 
+We start by loading and cleaning the raw data:
+
+```{r}
 # load the sediment data
 sed_dat <- readr::read_csv2("Data/pool-sediment-data.csv")
 head(sed_dat)
@@ -48,7 +60,11 @@ cols <- cols[which(inselbergs %in% unique(sed_dat$Inselberg))]
 # perform a correlation test on these data
 sed_cor <- cor.test(sed_dat$Lndepth, sed_dat$LnSedPerVRatio, method="pearson") # r = -0.73; P<0.001
 sed_est <- round(sed_cor$estimate, 2)
-  
+```
+
+Next, we plot the figure for the supplementary material:
+
+```{r}
 # plot fig. s5.1
 p1 <- 
   ggplot(data = sed_dat, mapping = aes(x = Lndepth, y = LnSedPerVRatio, colour = Inselberg)) +
@@ -66,9 +82,15 @@ p1 <-
   theme(legend.key = element_blank())
 
 plot(p1)
+```
 
+Finally, we export the plot:
+
+```{r}
 # export the figure
-ggsave("Figures/fig_s5.1.pdf", p1, 
+ggsave(here::here("Figures/fig_s5.1.pdf"), p1, 
        units = "cm", width = 12, height = 9.5)
+```
 
-### END
+
+

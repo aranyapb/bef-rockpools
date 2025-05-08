@@ -494,7 +494,7 @@ plot(p1)
 ```{r}
 # save the figure as a .rds file
 saveRDS(object = p1,
-        here::here("Figures/fig_5c.rds"))
+        here::here("Figures/fig_6c.rds"))
 ```
 
 ## Extract alpha BEF slope data

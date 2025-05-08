@@ -1,19 +1,33 @@
-#'
-#' @title Dimension reduction of climate variables
-#' 
-#' @description Use a principal components analysis to reduce the dimensions
-#' in the BIOCLIM dataset
-#'
+---
+title: "BioClim Principal Components Analysis"
+format: 
+  html:
+    embed-resources: true
+html-math-method: 
+  method: katex
+editor: source
+execute:
+  warning: false
+---
 
+Here, we produce a visualisation of the Principal Components Analysis used to summarise the BioClim climate variables (WorldClim database, Fick & Hijmans, 2017).
+
+We start by loading the relevant libraries:
+
+```{r}
 # load relevant libraries
 library(vegan)
 library(ggfortify)
 library(ggplot2)
 library(ggrepel)
 library(factoextra)
+```
 
+Next, we read the raw climate data that was downloaded from the WorldClim database and do some initial data cleaning.
+
+```{r}
 # load the bioclim data
-bioclim <- readr::read_csv("Data/bioclim-data.csv")
+bioclim <- readr::read_csv(here::here("Data-raw/bioclim-data.csv"))
 
 # convert to data.frame because some pca packages need row.names
 bioclim <- as.data.frame(bioclim)
@@ -24,11 +38,19 @@ bioclim <- bioclim[ ,-1]
 # set the rownames
 rownames(bioclim) <- c("IVC","SPN","KAM","SWE","FRA","USA","KOR","SWA","NWA","MAL")
 Inselberg <- rownames(bioclim)
+```
 
+With this dataset, we run a PCA on the scaled and centered climate variables.
+
+```{r}
 # run a pca on these climatic variable data
 pca1 <- prcomp(bioclim, scale = TRUE, center = TRUE)
 summary(pca1)
+```
 
+Together, the first two principal components explained more than 70% of the variation in the 10 climate variables. Using this PCA model, we visualised the inselbergs relative to the first two PC axes:
+
+```{r}
 # use the factorextra package to visualise the PCA
 p1 <- 
   factoextra::fviz_pca_biplot(pca1, repel = TRUE, 
@@ -38,12 +60,19 @@ p1 <-
   labs(title = NULL, x="PC1 (48.9%)", y="PC2 (24.3%)") +
   theme_classic() +
   theme(legend.position = "none")
-plot(p1)
+p1
+```
 
+```{r}
 # export the figure as fig. s1.1
-ggsave("Figures/fig_s1.1.pdf", p1, 
+ggsave(here::here("Figures/fig_s1.1.pdf"), 
+       p1, 
        units = "cm", width = 13, height = 11)
+```
 
+Finally, we run the PCA again so that we can easily extract the PC-scores. We exported these scores so that they are available if needed for further analysis.
+
+```{r}
 # run a pca to extract the scores using rda from vegan
 pca2 <- vegan::rda(bioclim, scale=TRUE)
 summary(pca2)
@@ -67,6 +96,9 @@ pca2_scores <-
 row.names(pca2_scores) <- NULL
 
 # write to a .csv file for use in later analyses
-readr::write_csv(x = pca2_scores, file = "Data/bioclim-pca-scores.csv")
+readr::write_csv(x = pca2_scores, file = here::here("Data/bioclim-pca-scores.csv"))
 
-### END
+```
+
+
+
