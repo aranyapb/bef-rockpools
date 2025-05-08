@@ -40,7 +40,7 @@ dat_gam_list <- list()
 for(i in 1:length(gam_files)) {
   
   # gamma scale
-  dat_gam <- read_delim(here::here(paste0("Data-raw/", gam_files[i])), delim = ";")
+  dat_gam <- read_csv(here::here(paste0("Data-raw/", gam_files[i])))
   
   # add ln-transformed variables
   dat_gam <- 
@@ -87,10 +87,7 @@ dat_alph_list <- list()
 for(i in 1:length(alph_files)) {
   
   # alpha scale 
-  dat_alph <- read_delim(here::here(paste0("Data-raw/", alph_files[i])), delim = ";")
-  
-  # remove a datapoint without depth information
-  dat_alph <- dat_alph[-alpha_rem[i], ]
+  dat_alph <- read_csv(here::here(paste0("Data-raw/", alph_files[i])))
   
   # add ln-transformed variables
   dat_alph <- 
