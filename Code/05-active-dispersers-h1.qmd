@@ -175,7 +175,7 @@ In addition, we used the *piecewiseSEM* package to calculate the $r^2$ value for
 piecewiseSEM::rsquared(lm1)
 ```
 
-This shows that the model does explain some variation in the logarithm of biomass but that most of the variance is explained by the random effects and not the fixed effects.
+This shows that the model explains a moderate amount of variation in the logarithm of biomass through the fixed effects. While random effects still account for additional variance, the fixed predictors now contribute substantially more to explaining biomass compared to the model with all taxa.
 
 ##### Checking model assumptions
 
