@@ -108,6 +108,7 @@ abline(0, 1)
 # check the rsquared value
 piecewiseSEM::rsquared(lm1)
 ```
+The fixed effects (logalpha and logdepth) explain some of the variation in log biomass, while the inclusion of random effects (accounting for variability across inselbergs) increases the explanatory power.
 
 #### Checking model assumptions
 

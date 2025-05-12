@@ -185,14 +185,14 @@ plot(lm2, 3)
 
 #### Hypothesis testing
 
-Under our hypothesis, we expect that the effect of log-transformed prominence will be significantly negative in active dispersers. In this model, the effect of log-transformed prominence is negative and marginally significant (P = 0.06).
+Under our hypothesis, we expect that the effect of log-transformed prominence will be significantly negative in active dispersers. In this model, the effect of log-transformed prominence is negative and marginally significant (P = 0.06). *ARANYA NOTE: p=0.1* 
 
 ```{r}
 # check model summary for model 1
 summary(lm1)
 ```
 
-In addition, we expected that there would be no effect of log-transformed prominence in passive dispersers. This was supported as there was no evidence for an effect of log-transformed prominence in passive dispersers (P = 0.46).
+In addition, we expected that there would be no effect of log-transformed prominence in passive dispersers. This was supported as there was no evidence for an effect of log-transformed prominence in passive dispersers (P = 0.46). *ARANYA NOTE: p=0.16 - similar result to Active dispersers...*
 
 ```{r}
 # check model summary for model 2

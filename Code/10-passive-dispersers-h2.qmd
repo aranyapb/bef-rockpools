@@ -108,6 +108,7 @@ abline(0, 1)
 # check the rsquared value
 piecewiseSEM::rsquared(lm1)
 ```
+The fixed effects (logalpha and logdepth) explain some of the variation in log biomass, while the inclusion of random effects (accounting for variability across inselbergs) increases the explanatory power a bit.
 
 #### Checking model assumptions
 
@@ -381,6 +382,8 @@ anova(lm1_bs, lm2_bs)
 ```
 
 Even with when modeling the effect of log-transformed alpha diversity on log-transformed pool biomass non-linearly using a basis spline, the linear random slope offset (which allows the effect to vary across inselbergs) fit the data significantly better which supports the hypothesis. Given that using the basis-spline did not change our conclusions, we stick with the simpler model.
+
+*ARANYA NOTE: Basis spline changed output*
 
 ##### Path coefficients
 
