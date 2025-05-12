@@ -102,7 +102,7 @@ Load the data for all taxa at the alpha-scale:
 
 ```{r}
 # load the data
-alpha_all <- readr::read_delim(here::here("Data-raw/alpha-all-raw.csv"), ";")
+alpha_all <- readr::read_delim(here::here("Data-raw/alpha-all-raw.csv"))
 head(alpha_all)
 ```
 
@@ -119,13 +119,6 @@ Check the data for potential outliers:
 # check depth of the pools
 summary(alpha_all)
 ```
-
-```{r}
-# check the values that were chosen for removal
-alpha_all[c(114, 102, 112), ]
-```
-
-
 
 ### active dispersers, alpha-scale
 
@@ -167,25 +160,6 @@ names(alpha_passive)
 ```
 
 
-### Problem 1:
-
-There seems to be different numbers of pools between the datasets for all-taxa, active dispersers and passive dispersers:
-
-```{r}
-# check row numbers for the different datasets
-nrow(alpha_all)
-nrow(alpha_active)
-nrow(alpha_passive)
-```
-
-Why is this the case? Is it because some of the pools were removed because they had zero biomass for either active or passive dispersers?
-
-```{r}
-# check if all pools are present across the active and passive datasets
-setdiff(unique(alpha_all$Pool), unique(c(alpha_active$Pool, alpha_passive$Pool)))
-```
-
-This is probably what happened indeed because all pools are represented in the active and passive dispersers datasets together.
 
 
 

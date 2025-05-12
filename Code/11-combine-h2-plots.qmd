@@ -26,7 +26,7 @@ fig6 <- files[ grepl(pattern = "_6[a-z]", files) ]
 # load the files for fig. 6
 fig6 <- lapply(fig6, function(x) {
   
-  y <- readRDS(paste0("Figures/", x)) 
+  y <- readRDS(here::here(paste0("Figures/", x)) )
   z <- 
     y +
     scale_y_continuous(limits = c(-8.2, 7.2))

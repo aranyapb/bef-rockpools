@@ -27,7 +27,7 @@ fig5 <- files[ grepl(pattern = "_5[a-z]", files) ]
 print(fig5)
 
 # load the files for fig. 5
-fig5 <- lapply(fig5, function(x) readRDS(paste0("Figures/", x) ) )
+fig5 <- lapply(fig5, function(x) readRDS(here::here(paste0("Figures/", x) ) ))
 
 # remove background from legend
 fig5 <- lapply(fig5, function(x) {

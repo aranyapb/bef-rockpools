@@ -185,7 +185,7 @@ plot(lm2, 3)
 
 #### Hypothesis testing
 
-Under our hypothesis, we expect that the effect of log-transformed prominence will be significantly negative in active dispersers. In this model, the effect of log-transformed prominence is negative and marginally significant (P = 0.06). *ARANYA NOTE: p=0.1* 
+Under our hypothesis, we expect that the effect of log-transformed prominence will be significantly negative in active dispersers. In this model, the effect of log-transformed prominence is negative and marginally significant (P = 0.06). *ARANYA NOTE: p=0.1 - not significant?* 
 
 ```{r}
 # check model summary for model 1
