@@ -175,7 +175,7 @@ In addition, we used the *piecewiseSEM* package to calculate the $r^2$ value for
 piecewiseSEM::rsquared(lm1)
 ```
 
-This shows that the model does explain some variation in the logarithm of biomass but that most of the variance is explained by the random effects and not the fixed effects.
+This shows that the model explains only a small proportion of the variation in log-transformed biomass through the fixed effects alone. Including random effects improves explanatory power somewhat, but overall, both fixed and random factors together still explain only a modest share of the variation in biomass. Less than for thw model with all taxa considered. 
 
 ##### Checking model assumptions
 
@@ -210,7 +210,7 @@ To test the hypothesis (i.e. that the total effect of log-transformed gamma dive
 drop1(lm1, test = "Chisq")
 ```
 
-These likelihood ratio tests showed that only the log-transformed pool depth significantly affected the log-transformed. Therefore, there was no effect of log-transformed gamma diversity on log-transformed biomass.
+These likelihood ratio tests showed that only the log-transformed pool depth and climate PC2 significantly affected the log-transformed biomass. Therefore, there was no effect of log-transformed gamma diversity on log-transformed biomass.
 
 ##### Path coefficients
 

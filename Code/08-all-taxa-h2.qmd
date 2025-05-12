@@ -41,7 +41,7 @@ Given the simplicity of this model, there are no conditional independencies that
 impliedConditionalIndependencies(dag_h2a)
 ```
 
-However, this causal structure is straightforward and uncontroversial. We would not expect pool alpha diversity or biomass to causally affect depth or inselberg and, give the hypothesis, it makes sense to model alpha affecting biomass (although a two-way relationship is often discussed, e.g. Grace et al. 2016).
+However, this causal structure is straightforward and uncontroversial. We would not expect pool alpha diversity or biomass to causally affect depth or inselberg and, given the hypothesis, it makes sense to model alpha affecting biomass (although a two-way relationship is often discussed, e.g. Grace et al. 2016).
 
 ## Statistical analysis
 
@@ -108,6 +108,7 @@ abline(0, 1)
 # check the rsquared value
 piecewiseSEM::rsquared(lm1)
 ```
+The fixed effects (logalpha and logdepth) explain a minimal portion of the variation in log biomass, while the inclusion of random effects (accounting for variability across inselbergs) increases the explanatory power slightly.
 
 #### Checking model assumptions
 
@@ -157,6 +158,7 @@ abline(0, 1)
 # check the rsquared value
 piecewiseSEM::rsquared(lm2)
 ```
+The fixed effects (logalpha and logdepth) explain a minimal portion of the variation in log biomass, while the inclusion of random effects (accounting for variability across inselbergs) increases the explanatory power.
 
 #### Checking model assumptions
 

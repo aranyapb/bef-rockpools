@@ -167,17 +167,16 @@ alpha_richness <- lapply(seq_along(community), function(i) {
   
   # If there's at least one non-zero pool, run iNEXT
   if (nrow(non_zero_comm) > 0) {
-    alpha <- non_zero_comm %>%
-      t() %>%
-      data.frame() %>%
-      iNEXT(datatype = "abundance")
+    alpha <- iNEXT(
+      as.list(as.data.frame(t(non_zero_comm))),
+      datatype = "abundance"
+    )
     
     out <- alpha$AsyEst %>%
-      filter(Diversity == "Species richness") %>%
-      slice_head(n = nrow(non_zero_comm)) %>%
-      mutate(Assemblage = rownames(non_zero_comm)) %>%
+      filter(Diversity == "Species richness") %>% 
       select(Assemblage, Estimator, `s.e.`)
-  } else {
+    
+      } else {
     out <- tibble(Assemblage = character(), Estimator = numeric(), `s.e.` = numeric())
   }
   
@@ -209,7 +208,7 @@ alpha_df <- alpha_df %>%
 # SEPPARATING ACTIVE AND PASSIVE DISPERSERS  
 
 # Load data
-AP_df <- read_csv("Data-raw/active-passive-split-taxa")
+AP_df <- read_csv("Data-raw/active-passive-split-taxa.csv")
 ab_df <- read_csv("Data-raw/pool-community-abundance-data.csv")
 
 # Define labels and taxa
@@ -263,15 +262,13 @@ alpha_richness_Active <- lapply(seq_along(community_Active), function(i) {
   
   # If there's at least one non-zero pool, run iNEXT
   if (nrow(non_zero_comm) > 0) {
-    alpha <- non_zero_comm %>%
-      t() %>%
-      data.frame() %>%
-      iNEXT(datatype = "abundance")
+    alpha <- iNEXT(
+      as.list(as.data.frame(t(non_zero_comm))),
+      datatype = "abundance"
+    )
     
     out <- alpha$AsyEst %>%
-      filter(Diversity == "Species richness") %>%
-      slice_head(n = nrow(non_zero_comm)) %>%
-      mutate(Assemblage = rownames(non_zero_comm)) %>%
+      filter(Diversity == "Species richness") %>% 
       select(Assemblage, Estimator, `s.e.`)
   } else {
     out <- tibble(Assemblage = character(), Estimator = numeric(), `s.e.` = numeric())
@@ -338,15 +335,13 @@ alpha_richness_Passive <- lapply(seq_along(community_Passive), function(i) {
   
   # If there's at least one non-zero pool, run iNEXT
   if (nrow(non_zero_comm) > 0) {
-    alpha <- non_zero_comm %>%
-      t() %>%
-      data.frame() %>%
-      iNEXT(datatype = "abundance")
+    alpha <- iNEXT(
+      as.list(as.data.frame(t(non_zero_comm))),
+      datatype = "abundance"
+    )
     
     out <- alpha$AsyEst %>%
       filter(Diversity == "Species richness") %>%
-      slice_head(n = nrow(non_zero_comm)) %>%
-      mutate(Assemblage = rownames(non_zero_comm)) %>%
       select(Assemblage, Estimator, `s.e.`)
   } else {
     out <- tibble(Assemblage = character(), Estimator = numeric(), `s.e.` = numeric())

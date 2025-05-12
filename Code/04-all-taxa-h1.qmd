@@ -210,7 +210,7 @@ To test the hypothesis (i.e. that the total effect of log-transformed gamma dive
 drop1(lm1, test = "Chisq")
 ```
 
-These likelihood ratio tests showed that only the log-transformed pool depth significantly affected the log-transformed. Therefore, there was no effect of log-transformed gamma diversity on log-transformed biomass.
+These likelihood ratio tests showed that only the log-transformed pool depth significantly affected the log-transformed biomass. Therefore, there was no effect of log-transformed gamma diversity on log-transformed biomass.
 
 ##### Path coefficients
 
@@ -304,7 +304,23 @@ Therefore, the relevant path coefficients associated with dag_h1b are summarised
 dplyr::bind_rows(resp_logbiomass,
                  resp_loggamma,
                  resp_logdepth)
+
+
 ```
+Visualising the relationship between depth and gamma since the estimate is 0
+
+``` {r}
+
+ggplot(h1_dat, aes(x = logdepth, y = loggamma)) +
+  geom_point() +  
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +  
+  labs(title = "Relationship between logdepth and loggamma",
+       x = "logdepth",
+       y = "loggamma") +
+  theme_minimal()
+
+```
+
 
 
 #### Data visualisation
