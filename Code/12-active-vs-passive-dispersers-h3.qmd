@@ -192,7 +192,7 @@ Under our hypothesis, we expect that the effect of log-transformed prominence wi
 summary(lm1)
 ```
 
-In addition, we expected that there would be no effect of log-transformed prominence in passive dispersers. This was supported as there was no evidence for an effect of log-transformed prominence in passive dispersers (P = 0.46). *ARANYA NOTE: p=0.16 - similar result to Active dispersers...*
+In addition, we expected that there would be no effect of log-transformed prominence in passive dispersers. This was supported as there was no evidence for an effect of log-transformed prominence in passive dispersers (P = 0.46). *ARANYA NOTE: p=0.16 - similar result to Active dispersers... but Rsq is better in AD*
 
 ```{r}
 # check model summary for model 2
