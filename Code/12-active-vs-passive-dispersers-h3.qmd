@@ -1,5 +1,5 @@
 ---
-title: "Active dispersers: Hypothesis 3"
+title: "Active versus passive dispersers: Hypothesis 3"
 format: 
   html:
     embed-resources: true
@@ -12,7 +12,7 @@ execute:
 
 ```{r}
 # prepare the environment
-taxa = "all"
+taxa <- "all"
 source(here::here("Code/prep-env.R"))
 ```
 
@@ -201,7 +201,7 @@ summary(lm2)
 
 ## Data visualisation
 
-To visualise this result, we used partial regression plots:
+To visualise this result, we used partial regression plots.
 
 ```{r}
 # plot fig 7: active dispersers
@@ -228,27 +228,22 @@ p1 <-
              aes(x = res_x, y = res_y, colour = inselberg), 
              shape = 16, size = 2) +
   geom_line(data = lm1_pred, 
-            aes(x = res_x, y = fit)) +
+            aes(x = res_x, y = fit), show.legend = FALSE) +
   geom_ribbon(data = lm1_pred, 
               aes(x = res_x, ymax = upr, ymin = lwr), 
-              alpha = 0.1) +
+              alpha = 0.1, show.legend = FALSE) +
   ggtitle("Active dispersers") +
-  ylab(paste0(ln_biomass, " (residuals)")) +
+  ylab(paste0("Alpha BEF-slope", " (residuals)")) +
   xlab("ln( Prominence ) (m) (residuals)") +
   scale_colour_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
   scale_fill_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
-  guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape =    1, stroke = 1),nrow = 1)) +
-  coord_cartesian(ylim = c(-0.50, 0.50))+
+  guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 16, stroke = 1),nrow = 1)) +
+  scale_y_continuous(limits = c(-0.75, 0.85)) +
+  # coord_cartesian(ylim = c(-0.50, 0.50))+
   theme_meta() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5, size = 11))
 plot(p1)
-```
-
-```{r}
-# save the figure as a .rds file
-saveRDS(object = p1,
-        here::here("Figures/fig_7a.rds"))
 ```
 
 
@@ -277,27 +272,22 @@ p2 <-
              aes(x = res_x, y = res_y, colour = inselberg), 
              shape = 16, size = 2) +
   geom_line(data = lm2_pred, 
-            aes(x = res_x, y = fit)) +
+            aes(x = res_x, y = fit), show.legend = FALSE) +
   geom_ribbon(data = lm2_pred, 
               aes(x = res_x, ymax = upr, ymin = lwr), 
-              alpha = 0.1) +
+              alpha = 0.1, show.legend = FALSE) +
   ggtitle("Passive dispersers") +
-  ylab(paste0(ln_biomass, " (residuals)")) +
+  ylab(paste0("Alpha BEF-slope", " (residuals)")) +
   xlab("ln( Prominence ) (m) (residuals)") +
   scale_colour_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
   scale_fill_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
-  guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 1, stroke = 1), nrow = 1)) +
-  coord_cartesian(ylim = c(-0.50, 0.50))+
+  guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 16, stroke = 1), nrow = 1)) +
+  scale_y_continuous(limits = c(-0.75, 0.85)) +
+  #coord_cartesian(ylim = c(-0.50, 0.50))+
   theme_meta() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5, size = 11))
 plot(p2)
-```
-
-```{r}
-# save the figure as a .rds file
-saveRDS(object = p2,
-        here::here("Figures/fig_7b.rds"))
 ```
 
 
@@ -305,15 +295,10 @@ saveRDS(object = p2,
 # combine the plots 
 library(ggplot2)
 library(ggpubr)
-library(here)
-
-# Load the plots
-fig7a <- readRDS(here("Figures/fig_7a.rds"))
-fig7b <- readRDS(here("Figures/fig_7b.rds"))
 
 # Optional: remove legend background
-fig7a <- fig7a + theme(legend.key = element_blank())
-fig7b <- fig7b + theme(legend.key = element_blank())
+fig7a <- p1 + theme(legend.key = element_blank())
+fig7b <- p2 + theme(legend.key = element_blank())
 
 # Combine into a single figure
 fig7 <- ggarrange(plotlist = list(fig7a, fig7b),
