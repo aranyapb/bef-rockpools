@@ -27,14 +27,8 @@ Next, we load the raw community abundance data and remove the single inselberg f
 
 ```{r}
 # load the relevant data
-sac_dat <- readr::read_csv2(here::here("Data-raw/pool-community-data.csv"))
+sac_dat <- readr::read_csv(here::here("Data-raw/pool-community-abundance-data.csv"))
 
-# remove the colombia inselberg
-unique(sac_dat$Inselberg)
-
-sac_dat <- 
-  sac_dat |>
-  dplyr::filter(Inselberg != "COL")
 ```
 
 Next, we split the community data by inselberg so that the data becomes a list where each list element represents the data from a different inselberg. We then write a function (SACplot) that implements the species accumulation curve via rarefaction and plots this curve.

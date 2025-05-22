@@ -27,7 +27,7 @@ We start by loading and cleaning the raw data:
 
 ```{r}
 # load the sediment data
-sed_dat <- readr::read_csv2("Data/pool-sediment-data.csv")
+sed_dat <- readr::read_csv2(here::here("Data-raw/pool-sediment-data.csv"))
 head(sed_dat)
 
 # convert the lndepth and lnsed variables to numeric variables
