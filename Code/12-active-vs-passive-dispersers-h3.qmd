@@ -185,14 +185,14 @@ plot(lm2, 3)
 
 #### Hypothesis testing
 
-Under our hypothesis, we expect that the effect of log-transformed prominence will be significantly negative in active dispersers. In this model, the effect of log-transformed prominence is negative and marginally significant (P = 0.06). *ARANYA NOTE: p=0.1 - not significant?* 
+Under our hypothesis, we expect that the effect of log-transformed prominence will be significantly negative in active dispersers. In this model, the effect of log-transformed prominence is not significant (P = 0.115). However, the effect of PC2 is significant (P = 0.023). 
 
 ```{r}
 # check model summary for model 1
 summary(lm1)
 ```
 
-In addition, we expected that there would be no effect of log-transformed prominence in passive dispersers. This was supported as there was no evidence for an effect of log-transformed prominence in passive dispersers (P = 0.46). *ARANYA NOTE: p=0.16 - similar result to Active dispersers... but Rsq is better in AD*
+In addition, we expected that there would be no effect of log-transformed prominence in passive dispersers. This was supported as there was no evidence for an effect of log-transformed prominence in passive dispersers (P = 0.16). 
 
 ```{r}
 # check model summary for model 2
@@ -237,8 +237,8 @@ p1 <-
   xlab("ln( Prominence ) (m) (residuals)") +
   scale_colour_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
   scale_fill_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
-  guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 1, stroke = 1),
-                                              nrow = 1)) +
+  guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape =    1, stroke = 1),nrow = 1)) +
+  coord_cartesian(ylim = c(-0.50, 0.50))+
   theme_meta() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5, size = 11))
@@ -286,8 +286,8 @@ p2 <-
   xlab("ln( Prominence ) (m) (residuals)") +
   scale_colour_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
   scale_fill_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
-  guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 1, stroke = 1),
-                                              nrow = 1)) +
+  guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 1, stroke = 1), nrow = 1)) +
+  coord_cartesian(ylim = c(-0.50, 0.50))+
   theme_meta() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5, size = 11))
@@ -301,8 +301,36 @@ saveRDS(object = p2,
 ```
 
 
+```{r}
+# combine the plots 
+library(ggplot2)
+library(ggpubr)
+library(here)
 
+# Load the plots
+fig7a <- readRDS(here("Figures/fig_7a.rds"))
+fig7b <- readRDS(here("Figures/fig_7b.rds"))
 
+# Optional: remove legend background
+fig7a <- fig7a + theme(legend.key = element_blank())
+fig7b <- fig7b + theme(legend.key = element_blank())
+
+# Combine into a single figure
+fig7 <- ggarrange(plotlist = list(fig7a, fig7b),
+                  ncol = 2, nrow = 1,
+                  labels = c("(a)", "(b)"),
+                  font.label = list(size = 11, face = "plain"),
+                  widths = c(1, 1),
+                  common.legend = TRUE, legend = "bottom")
+
+# Plot the combined figure
+plot(fig7)
+
+# Save to PDF
+ggsave(here("Figures/fig_7.pdf"), 
+       fig7, units = "cm", width = 14,
+       height = 9.5)
+```
 
 
 
