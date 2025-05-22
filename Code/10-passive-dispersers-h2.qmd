@@ -381,9 +381,7 @@ To test the hypothesis based on the models with the basis-splines, we compared *
 anova(lm1_bs, lm2_bs)
 ```
 
-Even with when modeling the effect of log-transformed alpha diversity on log-transformed pool biomass non-linearly using a basis spline, the linear random slope offset (which allows the effect to vary across inselbergs) fit the data significantly better which supports the hypothesis. Given that using the basis-spline did not change our conclusions, we stick with the simpler model.
-
-*ARANYA NOTE: Basis spline changed output*
+When modeling the effect of log-transformed alpha diversity on log-transformed pool biomass non-linearly using a basis spline, the linear random slope offset (which allows the effect to vary across inselbergs) did not fit the data significantly better, and thus this doesn't support the hypothesis. 
 
 ##### Path coefficients
 
