@@ -69,30 +69,6 @@ The three gamma-scale datasets have the same variables which are described below
 2. unit: cm
 3. description: Estimated depth for each rock pool. 
 
-#### Meanlogdepth2:
-
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
-
-#### MDSE2:
-
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
-
-#### Meanlogbiomass2:
-
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
-
-#### MBSE2:
-
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
-
 #### Slope:
 
 1. type (i.e. double, integer, character): Double
@@ -110,30 +86,6 @@ The three gamma-scale datasets have the same variables which are described below
 1. type (i.e. double, integer, character): Double
 2. unit: m
 3. description: Height of an inselberg above the surrounding landscape. 
-
-#### Meanlogdepth:
-
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
-
-#### MDSE:
-
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
-
-#### Meanlogbiomass:
-
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
-
-#### MBSE:
-
-1. type (i.e. double, integer, character): 
-2. unit: 
-3. description: 
 
 #### GSE:
 

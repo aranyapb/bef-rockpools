@@ -239,7 +239,7 @@ p1 <-
   scale_fill_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
   guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 16, stroke = 1),nrow = 1)) +
   scale_y_continuous(limits = c(-0.75, 0.85)) +
-  # coord_cartesian(ylim = c(-0.50, 0.50))+
+  coord_cartesian(ylim = c(-0.50, 0.50))+
   theme_meta() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5, size = 11))
@@ -283,7 +283,7 @@ p2 <-
   scale_fill_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
   guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 16, stroke = 1), nrow = 1)) +
   scale_y_continuous(limits = c(-0.75, 0.85)) +
-  #coord_cartesian(ylim = c(-0.50, 0.50))+
+  coord_cartesian(ylim = c(-0.50, 0.50))+
   theme_meta() +
   theme(legend.position = "bottom",
         plot.title = element_text(hjust = 0.5, size = 11))
@@ -312,7 +312,7 @@ fig7 <- ggarrange(plotlist = list(fig7a, fig7b),
 plot(fig7)
 
 # Save to PDF
-ggsave(here("Figures/fig_7.pdf"), 
+ggsave(here::here("Figures/fig_7.pdf"), 
        fig7, units = "cm", width = 14,
        height = 9.5)
 ```

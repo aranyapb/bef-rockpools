@@ -374,6 +374,7 @@ p1 <-
   ggtitle("Active dispersers") +
   ylab(ln_biomass) +
   xlab(" ") +
+  coord_cartesian(ylim = c(-2, 5))+
   scale_colour_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
   scale_fill_manual(values = wes_palette(name = "Darjeeling1", n = 10, type = "continuous")) +
   guides(size = "none", colour = guide_legend(override.aes = list(size = 2.5, alpha = 1, shape = 1, stroke = 1),

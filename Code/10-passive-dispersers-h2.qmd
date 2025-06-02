@@ -478,6 +478,7 @@ p1 <-
   geom_ribbon(data = lm2_pred, 
               aes(x = logalpha, ymax = upper, ymin = lower, fill = inselberg), 
               alpha = 0.1, show.legend = FALSE) +
+  coord_cartesian(ylim = c(-2, 4))+
   ggtitle("Passive dispersers") +
   ylab(ln_biomass) +
   xlab(" ") +

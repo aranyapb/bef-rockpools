@@ -1,5 +1,5 @@
 ---
-  title: "Data-cleaning"
+title: "00-prepare-raw-data"
 format: 
   html:
   embed-resources: true
@@ -9,29 +9,21 @@ editor: source
 execute:
   warning: false
 ---
-  
-# Creating 6 raw datasets to use in data analysis - 
 
-# alpha_all_raw, alpha_active_raw, alpha_passive_raw - Alpha scale (individual 
-# pools within an inselberg) data for all taxa, only active dispersers and only 
-# passive dispersers respectively. 
-# Includes the following columns (for each pool) - Inselberg, Pool, Alpha richness,
-# Alpha standard error (ASE), Gamma diversity, Biomass, Depth, Gamma, 
-# Gamma standard error (GSE), Climate PC1 and Climate PC2. 
+## Creating 6 raw datasets to use in data analysis - 
 
-# gamma_all_raw, gamma_active_raw, gamma_passive raw - Gamma scale (between 
-# inselbergs) data for all taxa, only active dispersers and only 
-# passive dispersers respectively. 
-# Includes the following columns (for each inselberg) - Inselberg, Pool, 
-# Gamma diversity, Median biomass, Median Depth, Mean log biomass, Mean log depth, 
-# Gamma, Gamma standard error (GSE),Prominence, Climate PC1 and Climate PC2. 
+Alpha scale (individual pools within an inselberg) data for all taxa, only active dispersers and only passive dispersers respectively- 
+(1) alpha_all_raw, (2) alpha_active_raw, (3) alpha_passive_raw.
+Includes the following columns (for each pool) - Inselberg, Pool, Alpha richness, Alpha standard error (ASE), Gamma diversity, Biomass, Depth, Gamma, Gamma standard error (GSE), Climate PC1 and Climate PC2.
 
-# Note: Run code in order. 
+Gamma scale (between inselbergs) data for all taxa, only active dispersers and only passive dispersers respectively - 
+(4) gamma_all_raw, (5) gamma_active_raw, (6) gamma_passive raw
+Includes the following columns (for each inselberg) - Inselberg, Pool, Gamma diversity, Median biomass, Median Depth, Mean log biomass, Mean log depth, Gamma, Gamma standard error (GSE),Prominence, Climate PC1 and Climate PC2.
 
-#-------------------------------------------------------------------------------
-# COMMUNITY BIOMASS 
-#-------------------------------------------------------------------------------
 
+## 1. Community biomass 
+
+```{r}
 library(tidyverse)
 library(readxl)
 library(readr)
@@ -40,8 +32,8 @@ library(readr)
 
 BM_df <- read_csv("Data-raw/pool-community-biomass-data.csv")
 
-BM_df %>% ncol() # All taxa = 436
-BM_df %>% nrow() # 241 rows 
+BM_df %>% ncol() 
+BM_df %>% nrow() 
 
 # pools to remove - App14 has a missing depth, Kam11 is too deep and Kor13 is eutrophicated (most likely). 
 remove_pools <- c("App14", "Kam11", "Kor13")
@@ -64,8 +56,8 @@ Biomass_gamma <- BM_df_1 %>%
             Meanlogbiomass = mean(log(Biomass+1), na.rm = TRUE))
 
 #-------------------------------------------------------------------------------
+## Sepparating datasets for only active and passive dispersers
 
-# SEPPARATING ACTIVE AND PASSIVE DISPERSERS  
 # Load data
 AP_df <- read_csv("Data-raw/active-passive-split-taxa.csv")
 
@@ -88,8 +80,7 @@ BM_df_Active <- BM_df %>% dplyr::select(all_of(labels_cols), all_of(active_cols)
 BM_df_Passive <- BM_df %>% dplyr::select(all_of(labels_cols), all_of(passive_cols))
 
 #-------------------------------------------------------------------------------
-
-# BIOMASS FOR ACTIVE DISPERSERS 
+# ACTIVE DISPERSERS 
 
 # pools to remove - App14 has a missing depth, Kam11 is too deep and Kor13 is eutrophicated (most likely). 
 remove_pools <- c("App14", "Kam11", "Kor13")
@@ -112,8 +103,7 @@ Biomass_gamma_Active <- BM_df_Active_1 %>%
             Meanlogbiomass = mean(log(Biomass+1), na.rm = TRUE))
 
 #-------------------------------------------------------------------------------
-
-# BIOMASS FOR PASSIVE DISPERSERS
+# PASSIVE DISPERSERS
 
 # pools to remove - App14 has a missing depth, Kam11 is too deep and Kor13 is eutrophicated (most likely). 
 remove_pools <- c("App14", "Kam11", "Kor13")
@@ -135,12 +125,17 @@ Biomass_gamma_Passive <- BM_df_Passive_1 %>%
   summarise(Biomass_median = median(Biomass, na.rm = TRUE),
             Meanlogbiomass = mean(log(Biomass+1), na.rm = TRUE))
 
-#-------------------------------------------------------------------------------
-# ALPHA RICHNESS 
-#-------------------------------------------------------------------------------
+```
+
+
+# 2. Alpha richness
+
+```{r}
 
 library(iNEXT)
 library(dplyr)
+
+# ALL TAXA
 
 ab_df <- read_csv("Data-raw/pool-community-abundance-data.csv")
 
@@ -309,8 +304,6 @@ alpha_df_Active <- alpha_df_Active %>%
     Alpha = Estimator,
     ASE = 's.e.')
 
-# Lots of warning messages - some sites have only one species - estimation not robust 
-
 #-------------------------------------------------------------------------------
 # ALPHA RICHNESS FOR PASSIVE DISPERSERS 
 
@@ -382,11 +375,11 @@ alpha_df_Passive <- alpha_df_Passive %>%
     Alpha = Estimator,
     ASE = 's.e.')
 
+```
 
-#-------------------------------------------------------------------------------
-# GAMMA DIVERSITY
-#-------------------------------------------------------------------------------
+# 3. Gamma diversity 
 
+```{r}
 library(iNEXT)
 library(dplyr)
 
@@ -540,10 +533,11 @@ gamma_df_Passive <- gamma_df_Passive %>%
   rename(
     Gamma = Estimator,
     GSE = 's.e.')
+```
 
-#-------------------------------------------------------------------------------
-# DEPTH
-#-------------------------------------------------------------------------------
+# 4. Depth
+
+```{r}
 
 Raw_df <- read_csv("Data-raw/raw-data-alpha.csv")
 
@@ -561,18 +555,19 @@ depth_gamma <- depth_df %>%
   group_by(Inselberg) %>%
   summarise(Depth_median = median(Depth, na.rm = TRUE),
             Meanlogdepth = mean(log(Depth), na.rm = TRUE))
+```
 
-#-------------------------------------------------------------------------------
-# PROMINENCE
-#-------------------------------------------------------------------------------
+# 5. Prominence
 
+```{r}
 Raw_data <- read_csv("Data-raw/raw-data-gamma.csv")
 
 prom_df <- Raw_data %>% dplyr::select(Inselberg, Prominence)
+```
 
-#-------------------------------------------------------------------------------
-# BIOCLIM variables (CLIMATE PC1 and PC2) 
-#-------------------------------------------------------------------------------
+# 6. BIOCLIM variables (CLIMATE PC1 and PC2) 
+
+```{r}
 
 library(sp)
 library(raster)
@@ -677,11 +672,15 @@ row.names(pca2_scores) <- NULL
 # write to a .csv file for use in later analyses
 readr::write_csv(x = pca2_scores, file = "Data-raw/bioclim-pca-scores.csv")
 
-#-------------------------------------------------------------------------------
-# MAKING NEW RAW DATA (Subsets) 
-#-------------------------------------------------------------------------------
+```
+
+
+
+## MAKING NEW RAW DATA (Subsets) 
 
 # ALPHA SCALE
+
+```{r}
 
 alpha_all_raw <- alpha_df %>% 
   left_join(BM_df_1, by = c("Inselberg", "Pool")) %>% 
@@ -707,9 +706,12 @@ alpha_passive_raw <- alpha_df_Passive %>%
 
 readr::write_csv(alpha_passive_raw, "Data-raw/alpha-passive-raw.csv")
 
-#-------------------------------------------------------------------------------
+```
 
 # GAMMA SCALE 
+
+
+```{r}
 
 gamma_all_raw <- gamma_df %>% 
   left_join(Biomass_gamma, by = "Inselberg") %>% 
@@ -734,6 +736,8 @@ gamma_passive_raw <- gamma_df_Passive %>%
   left_join(prom_df, by = "Inselberg")
 
 readr::write_csv(gamma_passive_raw, "Data-raw/gamma-passive-raw.csv")
+
+```
 
 #-------------------------------------------------------------------------------
 # END
