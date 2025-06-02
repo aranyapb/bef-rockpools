@@ -1,13 +1,5 @@
 ---
 title: "00-prepare-raw-data"
-format: 
-  html:
-  embed-resources: true
-html-math-method: 
-  method: katex
-editor: source
-execute:
-  warning: false
 ---
 
 ## Creating 6 raw datasets to use in data analysis - 
