@@ -192,7 +192,9 @@ anova(lm1, lm2)
 
 This shows that the model where the slope between log-transformed alpha diversity and log-transformed pool biomass was allowed to vary fit the data significantly better which supports our hypothesis.
 
-#### Sensitivity analyses
+### Sensitivity analyses
+
+#### Adding basis splines
 
 The assumptions of both **Model 1** and **Model 2** looked questionable based on the simulated prediction-residual plots. The residual pattern can sometimes be indicative of missing predictor variables or non-linear relationships that are not included. To address this problem, we performed a model selection procedure:
 
@@ -276,7 +278,200 @@ model2_comparison$models$m8 |>
 
 Based on this model-fitting procedure, we were unable to find models that were able to pass all the model specification tests from the DHARMa package.
 
-##### Path coefficients
+#### Adding basis splines and removing zero biomass pools
+
+The non-linear basis splines did not, in and of themselves, improve the assumptions. Therefore, we also decided to remove the zeros from the data (i.e. pools with zero biomass) to see if this was causing problems from zero inflation.
+
+```{r}
+# create list of model formulas
+model2_list <- list(
+   m1 = logbiomass ~ logalpha + logdepth + (1 + logalpha | inselberg),
+   m2 = logbiomass ~ logalpha + logdepth + (1 + logalpha + logdepth | inselberg),
+   m3 = logbiomass ~ logalpha + bs(logdepth, degree = 2) + (1 + logalpha | inselberg),
+   m4 = logbiomass ~ bs(logalpha, degree = 2) + logdepth + (1 + logalpha | inselberg),
+   m5 = logbiomass ~ bs(logalpha, degree = 3) + bs(logdepth, degree = 3) + (1 + logalpha | inselberg),
+   m6 = logbiomass ~ logalpha + bs(logdepth, degree = 2) + (1 + logalpha + logdepth | inselberg),
+   m7 = logbiomass ~ bs(logalpha, degree = 2) + logdepth + (1 + logalpha + logdepth | inselberg),
+   m8 = logbiomass ~ bs(logalpha, degree = 3) + bs(logdepth, degree = 3) + (1 + logalpha + logdepth | inselberg)
+)
+
+# remove the zeros from the data
+h2_dat_zeros <- h2_dat[h2_dat$logbiomass != min(h2_dat$logbiomass), ]
+
+# fit and compare the models
+model2_comparison <- 
+  fit_and_compare_lmm_models(formulas = model2_list, 
+                             data = h2_dat_zeros, n_sim = 1000)
+
+# check the model outputs
+model2_comparison$comparison
+```
+
+```{r}
+# plot the model diagnostics
+model2_comparison$models$m7 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+However, this also did not fully solve the issues with the model residual patterns.
+
+#### Removing pools with very high-biomass
+
+```{r}
+# check the distribution of the original variable
+hist(dat$biomass)
+```
+
+```{r}
+# log-transformed version is still very skewed
+hist(h2_dat$logbiomass)
+```
+
+What happens if we remove the tail values (i.e. only keep values below 50).
+
+```{r}
+# remove the zeros
+hist(dat$biomass[dat$biomass < 50])
+```
+
+```{r}
+# remove the zeros
+summary(dat)
+hist(log(dat$biomass[dat$biomass < 50 & dat$biomass > 0]), breaks = 20)
+```
+
+There are a few pools with very high biomass which is likely due to a couple of very big individuals. To check the robustness of the results, we also repeated the analysis considering only cases with biomass between 0 and 50:
+
+```{r}
+# what percentage of datapoints is this?
+sum(dat$biomass < 50 & dat$biomass > 0)/nrow(dat)
+```
+
+We start by subsetting the data and then preparing the data:
+
+```{r}
+# h2_dat
+h2_dat_sub <-
+  dat |>
+  dplyr::filter(biomass < 50, biomass > 0) |>
+  dplyr::mutate(logbiomass = log(biomass)) |>
+  dplyr::select(logbiomass, logalpha, logdepth, inselberg, alpha_se) |>
+  dplyr::mutate(logbiomass = scale(logbiomass)[, 1],
+                logalpha = scale(logalpha)[, 1],
+                logdepth = scale(logdepth)[, 1])
+```
+
+```{r}
+# fit the linear mixed model
+lm1_sub <- lmer(logbiomass ~ logalpha + logdepth + (1 | inselberg), 
+                data = h2_dat_sub,
+                REML = FALSE)
+```
+
+We then examined the fit of the model to the data along with the model assumptions via a graphical analysis of the residuals. To assess model fit, we plotted the observed values (y-axis) versus the modeled expectations (x-axis):
+
+```{r}
+# plot the model fit
+plot(predict(lm1_sub), h2_dat_sub$logbiomass, 
+     xlab = "Predicted E(log(biomass)) (mg)", ylab = "Observed log(biomass) (mg)")
+abline(0, 1)
+```
+
+```{r}
+# check the rsquared value
+piecewiseSEM::rsquared(lm1_sub)
+```
+
+```{r}
+# check assumptions using DHARMa
+
+# simulate residuals
+lm1_sub_res <- simulateResiduals(fittedModel = lm1_sub, n = 2000)
+
+# qq plot residuals
+plotQQunif(lm1_sub_res)
+```
+
+```{r}
+# residuals versus predicted values
+plotResiduals(lm1_sub_res)
+```
+
+```{r}
+# test for overdispersion
+testDispersion(lm1_sub_res)
+```
+```{r}
+# fit the linear mixed model
+lm2_sub <- lmer(logbiomass ~ logalpha + logdepth + (1 + logalpha | inselberg), 
+                data = h2_dat_sub,
+                REML = FALSE)
+```
+
+We then examined the fit of the model to the data along with the model assumptions via a graphical analysis of the residuals. To assess model fit, we plotted the observed values (y-axis) versus the modeled expectations (x-axis):
+
+```{r}
+# plot the model fit
+plot(predict(lm2_sub), h2_dat_sub$logbiomass, 
+     xlab = "Predicted E(log(biomass)) (mg)", ylab = "Observed log(biomass) (mg)")
+abline(0, 1)
+```
+
+```{r}
+# check the rsquared value
+piecewiseSEM::rsquared(lm2)
+```
+
+```{r}
+# check assumptions using DHARMa
+
+# simulate residuals
+lm2_sub_res <- simulateResiduals(fittedModel = lm2_sub, n = 2000)
+
+# qq plot residuals
+plotQQunif(lm2_sub_res)
+```
+
+```{r}
+# residuals versus predicted values
+plotResiduals(lm2_sub_res)
+```
+
+```{r}
+# test for overdispersion
+testDispersion(lm2_sub_res)
+```
+
+##### Hypothesis testing
+
+To test the hypothesis, we compared **Model 1** to **Model 2** using a likelihood ratio test using the `anova` function:
+
+```{r}
+# hypothesis test
+anova(lm1_sub, lm2_sub)
+```
+
+This shows that the model where the slope between log-transformed alpha diversity and log-transformed pool biomass was allowed to vary fit the data significantly better which supports our hypothesis. Therefore, this model that subsets the data and fits the assumptions considerably better leads to very similar conclusions:
+
+```{r}
+# check the original model drop1 analysis
+anova(lm1, lm2)
+```
+
+##### Check model coefficients
+
+As an additional check, we will compare the model coefficients between the models with the full data and those that are fit with the subset:
+
+```{r}
+# compare the coefficients directly
+dplyr::tibble(full_lmm = round(unlist(coef(summary(lm2))[, 1]), 3),
+              sub_lm = round(unlist(coef(summary(lm2_sub))[, 1]), 3))
+```
+
+These coefficients are very consistent so, therefore, we are confident that the model fit to the full data is robust.
+
+### Path coefficients
 
 Our main hypothesis test (i.e. the effect on log-transformed gamma diversity on log-transformed biomass) was tested using the likelihood ratio test (see previous section). However, we also wanted to estimate the path coefficients associated with the DAG (i.e. dag_h1b). For this, we need a series of models.
 

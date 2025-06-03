@@ -212,6 +212,194 @@ drop1(lm1, test = "Chisq")
 
 These likelihood ratio tests showed that only the log-transformed pool depth and climate PC2 significantly affected the log-transformed biomass. Therefore, there was no effect of log-transformed gamma diversity on log-transformed biomass.
 
+#### Sensitivity analyses
+
+##### Adding basis splines
+
+The assumptions of the model looked questionable based on the simulated prediction-residual plots. The residual pattern can sometimes be indicative of missing predictor variables or non-linear relationships that are not included. To address this problem, we performed a model selection procedure:
+
+```{r}
+# create list of model formulas
+model_list <- list(
+   m1 = logbiomass ~ loggamma + logdepth + pc1 + pc2 + (1 | inselberg),
+   m2 = logbiomass ~ loggamma + bs(logdepth, degree = 2) + pc1 + pc2 + (1 | inselberg),
+   m3 = logbiomass ~ loggamma + logdepth + bs(pc1, degree = 2) + pc2 + (1 | inselberg),
+   m4 = logbiomass ~ loggamma + logdepth + pc1 + bs(pc2, degree = 2) + (1 | inselberg),
+   m5 = logbiomass ~ loggamma + bs(logdepth, degree = 2) + bs(pc1, degree = 2)  + pc2 + (1 | inselberg),
+   m6 = logbiomass ~ loggamma + bs(logdepth, degree = 2)  + pc1 + bs(pc2, degree = 2) + (1 | inselberg),
+   m7 = logbiomass ~ loggamma + logdepth + bs(pc1, degree = 2) + bs(pc2, degree = 2) + (1 | inselberg),
+   m8 = logbiomass ~ loggamma + bs(logdepth, degree = 2) + bs(pc1, degree = 2) + bs(pc2, degree = 2) + (1 | inselberg),
+   m9 = logbiomass ~ bs(loggamma, degree = 2) + logdepth + pc1 + bs(pc2, degree = 2) + (1 | inselberg),
+   m10 = logbiomass ~ bs(loggamma, degree = 3) + logdepth + pc1 + pc2 + (1 | inselberg)
+)
+
+# fit and compare the models
+model_comparison <- 
+  fit_and_compare_lmm_models(formulas = model_list, 
+                             data = h1_dat, n_sim = 1000)
+
+# check the model outputs
+model_comparison$comparison
+```
+
+```{r}
+# plot the model diagnostics
+model_comparison$models$m3 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+```{r}
+# plot the model diagnostics
+model_comparison$models$m5 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+##### Adding basis splines and removing zero biomass pools
+
+The non-linear basis splines did not, in and of themselves, improve the assumptions. Therefore, we also decided to remove the zeros from the data (i.e. pools with zero biomass) to see if this was causing problems from zero inflation.
+
+```{r}
+# create list of model formulas
+model_list <- list(
+   m1 = logbiomass ~ loggamma + logdepth + pc1 + pc2 + (1 | inselberg),
+   m2 = logbiomass ~ loggamma + bs(logdepth, degree = 2) + pc1 + pc2 + (1 | inselberg),
+   m3 = logbiomass ~ loggamma + logdepth + bs(pc1, degree = 2) + pc2 + (1 | inselberg),
+   m4 = logbiomass ~ loggamma + logdepth + pc1 + bs(pc2, degree = 2) + (1 | inselberg),
+   m5 = logbiomass ~ loggamma + bs(logdepth, degree = 2) + bs(pc1, degree = 2)  + pc2 + (1 | inselberg),
+   m6 = logbiomass ~ loggamma + bs(logdepth, degree = 2)  + pc1 + bs(pc2, degree = 2) + (1 | inselberg),
+   m7 = logbiomass ~ loggamma + logdepth + bs(pc1, degree = 2) + bs(pc2, degree = 2) + (1 | inselberg),
+   m8 = logbiomass ~ loggamma + bs(logdepth, degree = 2) + bs(pc1, degree = 2) + bs(pc2, degree = 2) + (1 | inselberg),
+   m9 = logbiomass ~ bs(loggamma, degree = 2) + logdepth + pc1 + bs(pc2, degree = 2) + (1 | inselberg),
+   m10 = logbiomass ~ bs(loggamma, degree = 3) + logdepth + pc1 + pc2 + (1 | inselberg)
+)
+
+# remove the zeros from the data
+h1_dat_zeros <- h1_dat[h1_dat$logbiomass != min(h1_dat$logbiomass), ]
+
+# fit and compare the models
+model_comparison <- 
+  fit_and_compare_lmm_models(formulas = model_list, 
+                             data = h1_dat_zeros, n_sim = 1000)
+
+# check the model outputs
+model_comparison$comparison
+```
+
+```{r}
+# plot the model diagnostics
+model_comparison$models$m3 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+```{r}
+# plot the model diagnostics
+model_comparison$models$m5 |>
+  simulateResiduals(n = 2000) |>
+  plot()
+```
+
+##### Averaging out pool-level variation
+
+The combination of using non-linear basis splines and removing pools with zero biomass did not improve the model assumptions. Therefore, to make sure that the conclusions are robust, we averaged out the variation among pools within an inselberg.
+
+To do this, we average out variation in the different variables before scaling them:
+
+```{r}
+# h1_dat
+h1_dat_ave <-
+  dat |>
+  dplyr::group_by(inselberg) |>
+  dplyr::summarise(dplyr::across(c("logbiomass", "loggamma", "logdepth", "pc1", "pc2"), mean)) |>
+  dplyr::select(logbiomass, loggamma, logdepth, pc1, pc2, inselberg) |>
+  dplyr::mutate(logbiomass = scale(logbiomass)[, 1],
+                loggamma = scale(loggamma)[, 1],
+                logdepth = scale(logdepth)[, 1],
+                pc1 = scale(pc1)[, 1],
+                pc2 = scale(pc2)[, 1])
+```
+
+We then use a simple linear model to estiamte the total effect of gamma diversity (log-transformed) on biomass (log-transformed):
+
+```{r}
+# fit the linear mixed model
+lm1_ave <- lm(logbiomass ~ loggamma + logdepth + pc1 + pc2, data = h1_dat_ave)
+```
+
+We then test the fit of the model to the data:
+
+```{r}
+# plot the model fit
+plot(predict(lm1_ave), h1_dat_ave$logbiomass, 
+     xlab = "Predicted E(log(biomass)) (mg)", ylab = "Observed log(biomass) (mg)")
+abline(0, 1)
+```
+
+And, we check the model assumptions:
+
+```{r}
+# check
+plot(lm1_ave, 1)
+```
+
+```{r}
+# check
+plot(lm1_ave, 2)
+```
+
+```{r}
+# check
+plot(lm1_ave, 3)
+```
+
+```{r}
+# check
+plot(lm1_ave, 4)
+```
+
+The assumptions and the fit of the model looked good and much better than trying to use the linear mixed model.
+
+##### Hypothesis testing
+
+Given that this model based on the averages looked considerably better, we ran the same hypothesis tests as the original model. Specifically, we used a likelihood ratio test based on the $\chi^2$ distribution using the *drop1()* function:
+
+```{r}
+# hypothesis test
+drop1(lm1_ave, test = "Chisq")
+```
+
+If we compare these results to the full model that we fit, the results are almost identical and, as a result, we stick with the full model i.e. there is only a significant effect of PC2 on biomass (log-transformed).
+
+```{r}
+# hypothesis test
+drop1(lm1, test = "Chisq")
+```
+
+
+##### Check model coefficients
+
+```{r}
+# print averaged model
+summary(lm1_ave)
+```
+
+```{r}
+# print full mixed model
+summary(lm1)
+```
+
+We also can compare the coefficients more directly to see how consistent they are. The coefficients are mostly comparable with the exception of depth which makes sense because depth varies considerably within an inselberg. However, in both cases, they are not significant. Moreover, the directions of the other effects are quite consistent.
+
+```{r}
+# compare the coefficients directly
+dplyr::tibble(full_lmm = round(unlist(coef(summary(lm1))[, 1]), 3),
+              ave_lm = round(coef(lm1_ave), 3))
+```
+
+Overall, based on this sensitivity analysis, we think the results can be viewed as robust in the sense that there is no effect of gamma diversity (log-transformed) on biomass (log-transformed) across inselbergs.
+
 ##### Path coefficients
 
 Our main hypothesis test (i.e. the effect on log-transformed gamma diversity on log-transformed biomass) was tested using the likelihood ratio test (see previous section). However, we also wanted to estimate the path coefficients associated with the DAG (i.e. dag_h1b). For this, we need a series of models.

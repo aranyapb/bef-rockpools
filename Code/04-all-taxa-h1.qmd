@@ -185,15 +185,15 @@ In addition, we used the *DHARMa* package to help assess the model residuals as 
 # check assumptions using DHARMa
 
 # simulate residuals
-sim_res <- simulateResiduals(fittedModel = lm1, n = 2000)
+sim_res <- simulateResiduals(fittedModel = lm1, n = 5000)
 
 # qq plot residuals
-plotQQunif(sim_res)
+DHARMa::plotQQunif(sim_res)
 ```
 
 ```{r}
 # residuals versus predicted values
-plotResiduals(sim_res)
+DHARMa::plotResiduals(sim_res)
 ```
 
 ```{r}
