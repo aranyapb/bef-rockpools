@@ -38,3 +38,4 @@ alpha_div <- expression("ln("~alpha~"-diversity )")
 gamma_div <- expression("ln("~gamma~"-diversity )")
 ln_biomass <- "ln( biomass ) (mg)"
 ln_depth <- "ln (depth) (cm)"
+

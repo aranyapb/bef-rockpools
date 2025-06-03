@@ -307,10 +307,11 @@ dplyr::bind_rows(resp_logbiomass,
 
 
 ```
+
 Visualising the relationship between depth and gamma since the estimate is 0
 
 ``` {r}
-
+# check the relationship between depth and gamma
 ggplot(h1_dat, aes(x = logdepth, y = loggamma)) +
   geom_point() +  
   geom_smooth(method = "lm", se = TRUE, color = "blue") +  
@@ -318,7 +319,6 @@ ggplot(h1_dat, aes(x = logdepth, y = loggamma)) +
        x = "logdepth",
        y = "loggamma") +
   theme_minimal()
-
 ```
 
 
