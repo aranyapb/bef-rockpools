@@ -423,7 +423,7 @@ dplyr::bind_rows(resp_logbiomass,
 We plotted the model predictions for the effect of log-transformed gamma alpha on log-transformed pool biomass across inselbergs whilst holding log-transformed depth at the mean value.
 
 ```{r}
-# plot fig 5
+# plot fig 6
 
 # get model predictions
 lm2_pred <-

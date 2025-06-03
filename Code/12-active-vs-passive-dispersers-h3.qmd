@@ -312,8 +312,8 @@ fig7 <- ggarrange(plotlist = list(fig7a, fig7b),
 plot(fig7)
 
 # Save to PDF
-ggsave(here::here("Figures/fig_7.pdf"), 
-       fig7, units = "cm", width = 14,
+ggsave(here::here("Figures/fig_7.svg"), 
+       fig7, units = "cm", width = 20,
        height = 9.5)
 ```
 
