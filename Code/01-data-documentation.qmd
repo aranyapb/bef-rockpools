@@ -12,14 +12,13 @@ execute:
 
 ## Description of the raw data
 
-The data were produced during a PhD ((Snoeks 2024)[https://www.vub.be/sites/default/files/2024-02/PhD%20NL%20Joren%20Snoeks.pdf]). As a result, the data files that are analysed in this paper were manually created generated from the following raw data files which we have added to the repository for reference:
+The data files that are analysed in this paper were manually created (00-prepare-raw-data) from the following raw data files which we have added to the repository for reference:
 
 + pool-community-biomass-data.csv
-+ pool-community-data.csv
++ pool-community-abundance-data.csv
 + pool-sediment-data.csv
-+ allometric-equation-database.csv
 
-However, the data files that we use in this paper are the data files created in Snoeks (2024). These files are separated by taxa group (i.e. all taxa, active dispersers and passive dispersers) and by ecological scale (i.e. *gamma-scale* which is the scale of the whole inselberg and the *alpha-scale* which has the data for individual pools).
+These files used for analysis are separated by taxa group (i.e. all taxa, active dispersers and passive dispersers) and by ecological scale (i.e. *gamma-scale* which is the scale of the whole inselberg and the *alpha-scale* which has the data for individual pools).
 
 + gamma-all-raw.csv (separator: ;)
 + gamma-active-raw.csv (separator: ;)
